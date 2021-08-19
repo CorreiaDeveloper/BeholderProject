@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { doLogin } from '../../services/AuthService';
 
 function Login() {
 
+    const history = useHistory();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     function onChangeEmail(event) { setEmail(event.target.value); }
 
     function onChangePassword(event) { setPassword(event.target.value); }
+
+    function onSubmit(event) {
+        event.preventDefault();
+        
+        const isValid = doLogin(email, password);
+        if (isValid)
+            history.push('/settings')
+    }
 
     return (
         <main>
@@ -26,7 +36,7 @@ function Login() {
                             <div className="text-center text-md-center mb-4 mt-md-0">
                                 <h1 className="mb-0 h3">Sign in to our platform</h1>
                             </div>
-                            <form action="#" className="mt-4">
+                            <form action="#" className="mt-4" onSubmit={onSubmit}>
                                 <div className="form-group mb-4">
                                     <label htmlFor="email">Your Email</label>
                                     <div className="input-group">
