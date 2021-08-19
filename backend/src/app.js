@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const errorMiddleware = require('./middlewares/errorMiddleware');
 
 const app = express();
 
@@ -17,5 +18,7 @@ app.use('/beholder', (req, res, next) => {
 app.use('/', (req, res, next) => {
     res.send('Hello World');
 })
+
+app.use(errorMiddleware);
 
 module.exports = app;
