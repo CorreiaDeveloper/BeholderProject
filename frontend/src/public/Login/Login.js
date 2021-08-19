@@ -25,7 +25,8 @@ function Login() {
                     history.push('/settings')
             })
             .catch(err => {
-                setError(err);
+                console.error(err);
+                setError(`Invalid user and/or password!`);
             })
     }
 

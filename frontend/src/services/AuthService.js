@@ -1,13 +1,15 @@
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
 export async function doLogin(email, password) {
-    return new Promise((resolve, reject) => {
-        if(email === 'contato@luiztools.com.br' 
-        && password === '123456'){
-            return resolve(true);
-        }
-        return reject(`Invalid user and/or password!`);
-    })
+    const loginUrl = `${API_URL}/login`;
+    const response = await axios.post(loginUrl, { email, password });
+    return response.data;
 }
 
 export async function doLogout(token) {
-    
+    const logoutUrl = `${API_URL}/logout`;
+    const response = await axios.post(logoutUrl);
+    return response.data;
 }
