@@ -1,7 +1,10 @@
 const express = require('express');
+require('express-async-errors');
+
 const cors = require('cors');
 const helmet = require('helmet');
 const errorMiddleware = require('./middlewares/errorMiddleware');
+const authController = require('./controllers/authController');
 
 const app = express();
 
@@ -11,20 +14,9 @@ app.use(helmet());
 
 app.use(express.json());
 
-app.post('/login', (req, res, next) => {
-    const email = req.body.email;
-    const password = req.body.password;
+app.post('/login', authController.doLogin);
 
-    if (email === 'contato@luiztools.com.br'
-        && password === '123456')
-        return res.sendStatus(200);
-    else
-        return res.sendStatus(401);
-})
-
-app.post('/logout', (req, res, next) => {
-    return res.sendStatus(200);
-})
+app.post('/logout', authController.doLogout);
 
 app.use('/', (req, res, next) => {
     res.send('Hello World');
