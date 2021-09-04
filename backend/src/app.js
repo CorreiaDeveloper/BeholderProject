@@ -20,6 +20,8 @@ app.post('/login', authController.doLogin);
 
 app.get('/settings', authMiddleware, settingsController.getSettings);
 
+app.patch('/settings', authMiddleware, settingsController.updateSettings);
+
 app.post('/logout', authController.doLogout);
 
 app.use('/', (req, res, next) => {
