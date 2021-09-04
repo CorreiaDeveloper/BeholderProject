@@ -10,6 +10,7 @@ export async function doLogin(email, password) {
 
 export async function doLogout(token) {
     const logoutUrl = `${API_URL}/logout`;
-    const response = await axios.post(logoutUrl);
+    const headers = { 'authorization': token };
+    const response = await axios.post(logoutUrl, {}, { headers });
     return response.data;
 }
