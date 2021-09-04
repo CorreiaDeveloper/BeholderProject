@@ -21,7 +21,7 @@ function Login() {
 
         doLogin(email, password)
             .then(response => {
-                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('token', response.token);
                 history.push('/settings');
             })
             .catch(err => {

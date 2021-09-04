@@ -1,19 +1,26 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const settingsRepository = require('../repositories/settingsRepository');
 
-function doLogin(req, res, next) {
+async function doLogin(req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
 
-    if (email === 'contato@luiztools.com.br'
-        && bcrypt.compareSync(password, '$2a$12$7eYPuLs30rH/nBuH5ZiXSulDHzr8hOTnO1kllrtkLw0J1GnjYIc4S')) {
-        const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET, {
-            expiresIn: parseInt(process.env.JWT_EXPIRES)
-        });
-        return res.json({ token });
+    const settings = await settingsRepository.getSettingsByEmail(email);
+    if (settings) {
+        const isValid = bcrypt.compareSync(password, settings.password);
+        if (isValid) {
+            const token = jwt.sign({
+                id: settings.id
+            },
+                process.env.JWT_SECRET, {
+                expiresIn: parseInt(process.env.JWT_EXPIRES)
+            })
+            return res.json({ token });
+        }
     }
-    else
-        return res.sendStatus(401);
+
+    res.status(401).send('401 Unauthorized');
 }
 
 const blacklist = [];
