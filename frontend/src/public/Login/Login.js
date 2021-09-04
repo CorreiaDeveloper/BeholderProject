@@ -22,7 +22,7 @@ function Login() {
         doLogin(email, password)
             .then(isValid => {
                 if (isValid)
-                    history.push('/settings')
+                    history.push('/settings');
             })
             .catch(err => {
                 console.error(err);
