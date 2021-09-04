@@ -2,6 +2,7 @@ const express = require('express');
 require('express-async-errors');
 
 const cors = require('cors');
+const morgan = require('morgan');
 const helmet = require('helmet');
 const authMiddleware = require('./middlewares/authMiddleware');
 const errorMiddleware = require('./middlewares/errorMiddleware');
@@ -10,11 +11,13 @@ const settingsController = require('./controllers/settingsController');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 
 app.use(helmet());
 
 app.use(express.json());
+
+app.use(morgan('dev'));
 
 app.post('/login', authController.doLogin);
 
