@@ -1,4 +1,5 @@
 const symbolsRepository = require('../repositories/symbolsRepository');
+const crypto = require('../utils/crypto');
 
 async function updateSymbol(req, res, next) {
     const symbol = req.params.symbol;
@@ -27,7 +28,28 @@ async function getSymbol(req, res, next) {
 }
 
 async function syncSymbols(req, res, next) {
-    res.sendStatus(200);
+    const settingsRepository = require('../repositories/settingsRepository');
+    const settings = await settingsRepository.getSettings(res.locals.token.id);
+    settings.secretKey = crypto.decrypt(settings.secretKey);
+
+    const exchange = require('../utils/exchange')(settings);
+    const symbols = (await exchange.exchangeInfo()).symbols.map(item => {
+        const minNotionalFilter = item.filters.find(filter => filter.filterType === 'MIN_NOTIONAL');
+        const minLotSizeFilter = item.filters.find(filter => filter.filterType === 'LOT_SIZE');
+
+        return {
+            symbol: item.symbol,
+            basePrecision: item.baseAssetPrecision,
+            quotePrecision: item.quoteAssetPrecision,
+            minNotional: minNotionalFilter ? minNotionalFilter.minNotional : '1',
+            minLotSize: minLotSizeFilter ? minLotSizeFilter.minQty : '1',
+            isFavorite: false
+        }
+    });
+
+    await symbolsRepository.deleteAll();
+    await symbolsRepository.bulkInsert(symbols);
+    res.sendStatus(201);
 }
 
 module.exports = {
