@@ -5,12 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config ./src/server",
-    "dev": "npx nodemon -r dotenv/config ./src/server"
+    "dev": "npx nodemon -r dotenv/config ./src/server",
+    "createdb": "npx sequelize-cli db:create",
+    "migratedb": "npx sequelize-cli db:migrate",
+    "seeddb": "npx sequelize-cli db:seed:all"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aes-js": "^3.1.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
