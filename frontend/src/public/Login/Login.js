@@ -20,9 +20,9 @@ function Login() {
         event.preventDefault();
 
         doLogin(email, password)
-            .then(isValid => {
-                if (isValid)
-                    history.push('/settings');
+            .then(response => {
+                localStorage.setItem('token', response.data.token);
+                history.push('/settings');
             })
             .catch(err => {
                 console.error(err);
