@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getSymbols, syncSymbols, getSymbol } from '../../services/SymbolsService';
+import { getSymbols, syncSymbols } from '../../services/SymbolsService';
 import SymbolRow from './SymbolRow';
 import SelectQuote, { getDefaultQuote, filterSymbolObjects, setDefaultQuote } from '../../components/SelectQuote/SelectQuote';
 import SymbolModal from './SymbolModal';
@@ -15,12 +15,12 @@ function Symbols() {
     const [isSyncing, setIsSyncing] = useState(false);
     const [quote, setQuote] = useState(getDefaultQuote());
     const [editSymbol, setEditSymbol] = useState({
+        basePrecision: 0,
+        quotePrecision: 0,
         symbol: '',
-        basePrecision: '',
-        quotePrecision: '',
         minNotional: '',
         minLotSize: ''
-    });
+    })
 
     function errorHandling(err) {
         if (err.response && err.response.status === 401)
@@ -32,12 +32,9 @@ function Symbols() {
     }
 
     function onEditSymbol(event) {
-        const token = localStorage.getItem("token");
         const symbol = event.target.id.replace('edit', '');
-
-        getSymbol(symbol, token)
-            .then(symbolObj => setEditSymbol(symbolObj))
-            .catch(err => errorHandling(err))
+        const symbolObj = symbols.find(s => s.symbol === symbol);
+        setEditSymbol(symbolObj);
     }
 
     function onSyncClick(event) {
@@ -69,7 +66,7 @@ function Symbols() {
         loadSymbols();
     }, [isSyncing, quote])
 
-    function onModalSubmit(event) {
+    function onModalSubmit(event){
         loadSymbols();
     }
 
