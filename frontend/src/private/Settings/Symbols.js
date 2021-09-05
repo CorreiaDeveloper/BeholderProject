@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getSymbols, syncSymbols } from '../../services/SymbolsService';
+import { getSymbols, syncSymbols, getSymbol } from '../../services/SymbolsService';
 import SymbolRow from './SymbolRow';
 import SelectQuote, { getDefaultQuote, filterSymbolObjects, setDefaultQuote } from '../../components/SelectQuote/SelectQuote';
+import SymbolModal from './SymbolModal';
 
 function Symbols() {
 
@@ -13,6 +14,13 @@ function Symbols() {
     const [success, setSuccess] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
     const [quote, setQuote] = useState(getDefaultQuote());
+    const [editSymbol, setEditSymbol] = useState({
+        symbol: '',
+        basePrecision: '',
+        quotePrecision: '',
+        minNotional: '',
+        minLotSize: ''
+    });
 
     function errorHandling(err) {
         if (err.response && err.response.status === 401)
@@ -23,16 +31,14 @@ function Symbols() {
         setSuccess('');
     }
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        getSymbols(token)
-            .then(symbols => {
-                setSymbols(filterSymbolObjects(symbols, quote));
-            })
-            .catch(err => errorHandling(err))
-    }, [isSyncing, quote])
+    function onEditSymbol(event) {
+        const token = localStorage.getItem("token");
+        const symbol = event.target.id.replace('edit', '');
 
-    function onEditSymbol(event) { }
+        getSymbol(symbol, token)
+            .then(symbolObj => setEditSymbol(symbolObj))
+            .catch(err => errorHandling(err))
+    }
 
     function onSyncClick(event) {
         const token = localStorage.getItem("token");
@@ -48,6 +54,23 @@ function Symbols() {
     function onQuoteChange(event) {
         setQuote(event.target.value);
         setDefaultQuote(event.target.value);
+    }
+
+    function loadSymbols(){
+        const token = localStorage.getItem('token');
+        getSymbols(token)
+            .then(symbols => {
+                setSymbols(filterSymbolObjects(symbols, quote));
+            })
+            .catch(err => errorHandling(err))
+    }
+
+    useEffect(() => {
+        loadSymbols();
+    }, [isSyncing, quote])
+
+    function onModalSubmit(event) {
+        loadSymbols();
     }
 
     return (
@@ -103,6 +126,7 @@ function Symbols() {
                     </div>
                 </div>
             </div>
+            <SymbolModal data={editSymbol} onSubmit={onModalSubmit} />
         </React.Fragment>
     )
 }
