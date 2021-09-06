@@ -10,7 +10,7 @@ settingsRepository.getDefaultSettings()
             console.log('App is running at ' + process.env.PORT);
         })
 
-        const wss= appWs(server);
+        const wss = appWs(server);
 
         appEm(settings, wss);
     })

@@ -4,32 +4,37 @@ const crypto = require('./utils/crypto');
 module.exports = (settings, wss) => {
     if (!settings) throw new Error(`You can't init the Exchange Monitor App without his settings. Check your database and/or startup code.`);
 
-    settings.secretKey = crypto.decrypt(settings.secretKey);
     const exchange = require('./utils/exchange')(settings);
 
-    exchange.miniTickerStream(markets => {
-        //console.log(markets);
+    function broadcast(jsonObject) {
         if (!wss || !wss.clients) return;
         wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ miniTicker: markets }));
+                client.send(JSON.stringify(jsonObject));
             }
         });
+    }
+
+    exchange.miniTickerStream(markets => {
+        //console.log(markets);
+        broadcast({ miniTicker: markets });
     })
 
     let book = [];
     exchange.bookStream(order => {
         //console.log(markets);
-        if (!wss || !wss.clients) return;
         if (book.length === 200) {
-            wss.clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ book }));
-                }
-            });
+            broadcast({ book })
             book = [];
         } else book.push({ ...order });
     })
+
+    exchange.userDataStream(balanceData => {
+        //console.log(balanceData);
+        broadcast({ balance: balanceData })
+    },
+        executionData => console.log(executionData)
+    )
 
     console.log('App Exchange Monitor is running!');
 }

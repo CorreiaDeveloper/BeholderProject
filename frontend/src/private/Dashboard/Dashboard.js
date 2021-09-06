@@ -4,10 +4,13 @@ import Menu from '../../components/Menu/Menu';
 import LineChart from './LineChart';
 import MiniTicker from './MiniTicker/MiniTicker';
 import BookTicker from './BookTicker/BookTicker';
+import Wallet from './Wallet/Wallet';
 
 function Dashboard() {
 
     const [tickerState, setTickerState] = useState({});
+
+    const [balanceState, setBalanceState] = useState({});
 
     const [bookState, setBookState] = useState({});
 
@@ -19,6 +22,9 @@ function Dashboard() {
             if (lastJsonMessage) {
                 if (lastJsonMessage.miniTicker)
                     setTickerState(lastJsonMessage.miniTicker);
+                else if (lastJsonMessage.balance) {
+                    setBalanceState(lastJsonMessage.balance);
+                }
                 else if (lastJsonMessage.book) {
                     lastJsonMessage.book.forEach(b => bookState[b.symbol] = b);
                     setBookState(bookState);
@@ -50,6 +56,7 @@ function Dashboard() {
                 </div>
                 <div className="row">
                     <BookTicker data={bookState} />
+                    <Wallet data={balanceState} />
                 </div>
             </main>
         </React.Fragment>
