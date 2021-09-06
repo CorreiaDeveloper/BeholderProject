@@ -22,7 +22,7 @@ function Login() {
         doLogin(email, password)
             .then(response => {
                 localStorage.setItem('token', response.token);
-                history.push('/settings');
+                history.push('/dashboard');
             })
             .catch(err => {
                 console.error(err);

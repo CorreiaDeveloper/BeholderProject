@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import Menu from '../../components/Menu/Menu';
 import LineChart from './LineChart';
+import MiniTicker from './MiniTicker/MiniTicker';
 
 function Dashboard() {
 
@@ -35,6 +36,11 @@ function Dashboard() {
                     </div>
                 </div>
                 <LineChart />
+                <div className="row">
+                    <div className="col-12">
+                        <MiniTicker data={tickerState} />
+                    </div>
+                </div>
             </main>
         </React.Fragment>
     );
