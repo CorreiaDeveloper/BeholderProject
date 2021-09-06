@@ -10,7 +10,8 @@ module.exports = (settings) => {
         APISECRET: settings.secretKey,
         recvWindow: 60000,
         urls: {
-            base: settings.apiUrl.endsWith('/') ? settings.apiUrl : settings.apiUrl + '/'
+            base: settings.apiUrl.endsWith('/') ? settings.apiUrl : settings.apiUrl + '/',
+            stream: settings.streamUrl.endsWith('/') ? settings.streamUrl : settings.streamUrl + '/'
         },
         verbose: LOGS
     });
