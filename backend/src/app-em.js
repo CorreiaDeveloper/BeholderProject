@@ -1,3 +1,4 @@
+const WebSocket = require('ws');
 const crypto = require('./utils/crypto');
 
 module.exports = (settings, wss) => {
