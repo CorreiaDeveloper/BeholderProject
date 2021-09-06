@@ -25,8 +25,15 @@ module.exports = (settings) => {
         });
     }
 
+    function bookStream(callback) {
+        binance.websockets.bookTickers(order => {
+            callback(order)
+        });
+    }
+
     return {
         exchangeInfo,
-        miniTickerStream
+        miniTickerStream,
+        bookStream
     }
 }
