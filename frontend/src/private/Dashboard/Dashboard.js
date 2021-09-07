@@ -31,7 +31,7 @@ function Dashboard() {
                 }
             }
         },
-        queryParams: {},
+        queryParams: { 'token': localStorage.getItem("token") },
         onError: (event) => {
             console.error(event);
         },
