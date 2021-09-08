@@ -28,6 +28,8 @@ const symbolModel = database.define('symbol', {
         defaultValue: false,
         allowNull: false
     },
+    base: Sequelize.STRING,
+    quote: Sequelize.STRING,
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE
 })
