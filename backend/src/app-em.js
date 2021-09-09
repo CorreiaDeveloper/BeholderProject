@@ -56,7 +56,6 @@ module.exports = (settings, wss) => {
         if (order.status === orderStatus.REJECTED) order.obs = executionData.r;
 
         setTimeout(() => {
-            console.log('uha')
             ordersRepository.updateOrderByOrderId(order.orderId, order.clientOrderId, order)
                 .then(order => order && broadcast({ execution: order }))
                 .catch(err => console.error(err));
