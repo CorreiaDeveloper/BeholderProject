@@ -7,6 +7,7 @@ import OrderType from './OrderType';
 import QuantityInput from './QuantityInput';
 import { getSymbol } from '../../services/SymbolsService';
 import { STOP_TYPES } from '../../services/ExchangeService';
+import { placeOrder } from '../../services/OrdersService';
 
 /**
  * props:
@@ -50,7 +51,16 @@ function NewOrderModal(props) {
     const inputTotal = useRef('');
 
     function onSubmit(event) {
-        console.log('click');
+        const token = localStorage.getItem('token');
+        placeOrder(order, token)
+            .then(result => {
+                btnClose.current.click();
+                if (props.onSubmit) props.onSubmit(result);
+            })
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
+                setError(err.response ? err.response.data : err.message);
+            })
     }
 
     function onInputChange(event) {
