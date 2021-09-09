@@ -1,40 +1,88 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { getSymbols, syncSymbols } from '../../services/SymbolsService';
-import SymbolRow from './SymbolRow';
-import SelectQuote, { getDefaultQuote, filterSymbolObjects, setDefaultQuote } from '../../components/SelectQuote/SelectQuote';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { searchSymbols, getSymbol, syncSymbols } from '../../services/SymbolsService';
 import SymbolModal from './SymbolModal';
+import SymbolRow from './SymbolRow';
+import Pagination from '../../components/Pagination/Pagination';
+import SelectQuote, { getDefaultQuote, setDefaultQuote } from '../../components/SelectQuote/SelectQuote';
 
 function Symbols() {
 
     const history = useHistory();
 
+    const defaultLocation = useLocation();
+
+    function getPage(location) {
+        if (!location) location = defaultLocation;
+        return new URLSearchParams(location.search).get('page') || '1';
+    }
+
+    useEffect(() => {
+        return history.listen((location) => {
+            setPage(getPage(location));
+        })
+    }, [history])
+
     const [symbols, setSymbols] = useState([]);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-    const [isSyncing, setIsSyncing] = useState(false);
+
     const [quote, setQuote] = useState(getDefaultQuote());
+
+    const [count, setCount] = useState(0);
+
+    const [page, setPage] = useState(getPage());
+
+    const [error, setError] = useState('');
+
+    const [success, setSuccess] = useState('');
+
+    const [isSyncing, setIsSyncing] = useState(false);
+
     const [editSymbol, setEditSymbol] = useState({
-        basePrecision: 0,
-        quotePrecision: 0,
         symbol: '',
+        basePrecision: '',
+        quotePrecision: '',
         minNotional: '',
         minLotSize: ''
-    })
+    });
+
+    function onQuoteChange(event) {
+        setQuote(event.target.value);
+        setDefaultQuote(event.target.value);
+    }
 
     function errorHandling(err) {
-        if (err.response && err.response.status === 401)
-            return history.push('/');
-
         console.error(err.response ? err.response.data : err.message);
         setError(err.response ? err.response.data : err.message);
         setSuccess('');
     }
 
+    function loadSymbols(selectedValue) {
+        const token = localStorage.getItem('token');
+        const search = selectedValue === 'FAVORITES' ? '' : selectedValue;
+        const onlyFavorites = selectedValue === 'FAVORITES';
+        searchSymbols(search, onlyFavorites, getPage(), token)
+            .then(result => {
+                setSymbols(result.rows);
+                setCount(result.count);
+            })
+            .catch(err => errorHandling(err))
+    }
+
+    useEffect(() => {
+        loadSymbols(quote);
+    }, [isSyncing, quote, page])
+
+    function onModalSubmit(event) {
+        loadSymbols(event.target.value);
+    }
+
     function onEditSymbol(event) {
+        const token = localStorage.getItem("token");
         const symbol = event.target.id.replace('edit', '');
-        const symbolObj = symbols.find(s => s.symbol === symbol);
-        setEditSymbol(symbolObj);
+
+        getSymbol(symbol, token)
+            .then(symbolObj => setEditSymbol(symbolObj))
+            .catch(err => errorHandling(err))
     }
 
     function onSyncClick(event) {
@@ -46,28 +94,6 @@ function Symbols() {
                 errorHandling(err)
                 setIsSyncing(false);
             })
-    }
-
-    function onQuoteChange(event) {
-        setQuote(event.target.value);
-        setDefaultQuote(event.target.value);
-    }
-
-    function loadSymbols(){
-        const token = localStorage.getItem('token');
-        getSymbols(token)
-            .then(symbols => {
-                setSymbols(filterSymbolObjects(symbols, quote));
-            })
-            .catch(err => errorHandling(err))
-    }
-
-    useEffect(() => {
-        loadSymbols();
-    }, [isSyncing, quote])
-
-    function onModalSubmit(event){
-        loadSymbols();
     }
 
     return (
@@ -102,6 +128,7 @@ function Symbols() {
                                         {symbols.map(item => <SymbolRow key={item.symbol} data={item} onClick={onEditSymbol} />)}
                                     </tbody>
                                 </table>
+                                <Pagination count={count} />
                                 <div className="card-footer">
                                     <div className="row">
                                         <div className="col">
@@ -125,7 +152,7 @@ function Symbols() {
             </div>
             <SymbolModal data={editSymbol} onSubmit={onModalSubmit} />
         </React.Fragment>
-    )
+    );
 }
 
 export default Symbols;

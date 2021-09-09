@@ -8,6 +8,12 @@ export async function getSymbols(token) {
     return response.data;
 }
 
+export async function searchSymbols(search, onlyFavorites, page, token) {
+    const headers = { 'authorization': token };
+    const response = await axios.get(`${SYMBOLS_URL}/?search=${search}&page=${page}&onlyFavorites=${onlyFavorites}`, { headers });
+    return response.data;
+}
+
 export async function getSymbol(symbol, token) {
     const headers = { 'authorization': token };
     const response = await axios.get(`${SYMBOLS_URL}/${symbol}`, { headers });

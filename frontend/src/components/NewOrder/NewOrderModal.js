@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import SelectSymbol from './SelectSymbol';
+import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
 import SymbolPrice from './SymbolPrice';
 import WalletSummary from './WalletSummary';
 import SelectSide from './SelectSide';

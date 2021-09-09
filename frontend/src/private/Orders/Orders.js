@@ -7,7 +7,7 @@ import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 import OrderRow from './OrderRow';
 import { getOrders } from '../../services/OrdersService';
 import Pagination from '../../components/Pagination/Pagination';
-
+import ViewOrderModal from './ViewOrderModal';
 import { getBalance } from '../../services/ExchangeService';
 
 function Orders() {
@@ -126,7 +126,7 @@ function Orders() {
                     <Pagination count={count} />
                 </div>
             </main>
-            
+            <ViewOrderModal data={viewOrder} />
             <NewOrderModal wallet={balances} onSubmit={onOrderSubmit} />
         </React.Fragment>
     );
