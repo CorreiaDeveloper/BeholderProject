@@ -27,7 +27,7 @@ function Wallet(props) {
                         if (a.symbol < b.symbol) return -1;
                         return 0;
                     });
-
+                    
                 if (props.onUpdate)
                     props.onUpdate(balances);
 
@@ -39,11 +39,7 @@ function Wallet(props) {
     }
 
     useEffect(() => {
-        if (props.data && Object.entries(props.data).length)
-            setBalances(props.data)
-        else
-            getBalanceCall();
-
+        getBalanceCall();
     }, [props.data])
 
     return (<React.Fragment>
@@ -70,10 +66,10 @@ function Wallet(props) {
                                 balances && balances.length
                                     ? balances.map(item => (
                                         <tr key={`wallet${item.symbol}`}>
-                                                <td className="text-gray-900">{item.symbol}</td>
-                                                <td className="text-gray-900">{item.available.substring(0, 10)}</td>
-                                                <td className="text-gray-900">{item.onOrder.substring(0, 10)}</td>
-                                            </tr>
+                                            <td className="text-gray-900">{item.symbol}</td>
+                                            <td className="text-gray-900">{item.available.substring(0, 10)}</td>
+                                            <td className="text-gray-900">{item.onOrder.substring(0, 10)}</td>
+                                        </tr>
                                     ))
                                     : <React.Fragment></React.Fragment>
                             }
