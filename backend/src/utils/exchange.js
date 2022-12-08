@@ -9,6 +9,7 @@ module.exports = (settings) => {
         APIKEY: settings.accessKey,
         APISECRET: settings.secretKey,
         recvWindow: 60000,
+        family: 0,
         urls: {
             base: settings.apiUrl.endsWith('/') ? settings.apiUrl : settings.apiUrl + '/',
             stream: settings.streamUrl.endsWith('/') ? settings.streamUrl : settings.streamUrl + '/'
