@@ -19,6 +19,13 @@ module.exports = (settings, wss) => {
     exchange.miniTickerStream(markets => {
         //console.log(markets);
         broadcast({ miniTicker: markets });
+
+        //simulação de book
+        const books = Object.entries(markets).map(mkt => {
+            return { symbol: mkt[0], bestAsk: mkt[1].close, bestBid: mkt[1].close };
+        })
+        broadcast({ book: books });
+        //fim da simulação de book
     })
 
     let book = [];
