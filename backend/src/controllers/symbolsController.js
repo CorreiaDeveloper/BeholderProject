@@ -34,8 +34,8 @@ async function syncSymbols(req, res, next) {
     const settings = await settingsRepository.getSetingsDecrypted(res.locals.token.id);
     const exchange = require('../utils/exchange')(settings);
     const symbols = (await exchange.exchangeInfo()).symbols.map(item => {
-        const minNotionalFilter = item.filters.find(filter => filter.filterType === 'MIN_NOTIONAL');
-        const minLotSizeFilter = item.filters.find(filter => filter.filterType === 'LOT_SIZE');
+        const notionalFilter = item.filters.find(filter => filter.filterType === 'NOTIONAL');
+        const lotSizeFilter = item.filters.find(filter => filter.filterType === 'LOT_SIZE');
 
         return {
             symbol: item.symbol,
@@ -43,8 +43,8 @@ async function syncSymbols(req, res, next) {
             quotePrecision: item.quoteAssetPrecision,
             base: item.baseAsset,
             quote: item.quoteAsset,
-            minNotional: minNotionalFilter ? minNotionalFilter.minNotional : '1',
-            minLotSize: minLotSizeFilter ? minLotSizeFilter.minQty : '1',
+            minNotional: notionalFilter ? notionalFilter.minNotional : '1',
+            minLotSize: lotSizeFilter ? lotSizeFilter.minQty : '1',
             isFavorite: favoriteSymbols.some(s => s === item.symbol)
         }
     });
