@@ -25,9 +25,10 @@ function Login() {
             if (isValid)
                 history.push('/settings');
         })
-        .catch(err =>{
-            setError(err)
-        })
+        .catch(err => {
+                console.error(err);
+                setError(`Invalid user and/or password!`);
+            })
     }
 
     return (
