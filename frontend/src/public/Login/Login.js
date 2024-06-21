@@ -12,20 +12,23 @@ function Login() {
     const [error, setError] = useState('');
 
     function onChangeInput(event) {
-        if (event.target.id === 'email') 
-            setEmail(event.target.value);        
-        else if (event.target.id === 'password') 
-            setPassword(event.target.value);        
+        if (event.target.id === 'email')
+            setEmail(event.target.value);
+        else if (event.target.id === 'password')
+            setPassword(event.target.value);
     }
 
     function onSubmit(event) {
         event.preventDefault();
 
-        doLogin(email, password).then(isValid => {
-            if (isValid)
-                history.push('/settings');
-        })
-        .catch(err => {
+        doLogin(email, password)
+            .then(response => {
+                if (response){
+                    localStorage.setItem('token', response.token);
+                    history.push('/settings');
+                }
+            })
+            .catch(err => {
                 console.error(err);
                 setError(`Invalid user and/or password!`);
             })
@@ -82,9 +85,9 @@ function Login() {
                                         <button type="submit" className="btn btn-gray-800">Sign in</button>
                                     </div>
                                     {
-                                        error ? 
-                                        <div className='alert alert-danger mt-2'>{error}</div>
-                                        : <React.Fragment></React.Fragment>
+                                        error ?
+                                            <div className='alert alert-danger mt-2'>{error}</div>
+                                            : <React.Fragment></React.Fragment>
                                     }
                                 </div>
                             </form>

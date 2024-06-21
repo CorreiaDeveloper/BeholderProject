@@ -1,5 +1,8 @@
 const express = require('express');
-const authController = require('./controllers/authController')
+const authMiddleware = require('./middlewares/authMiddleware');
+const authController = require('./controllers/authController');
+const settingsController = require('./controllers/settingsController');
+
 
 require('express-async-errors');
 
@@ -15,6 +18,8 @@ app.use(helmet());
 app.use(express.json());
 
 app.post('/login', authController.doLogin);
+
+app.get('/settings', authMiddleware, settingsController.getSettings);
 
 app.post('/logout', authController.doLogout);
 
