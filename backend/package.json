@@ -5,18 +5,24 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config ./src/server",
-    "dev": "npx nodemon -r dotenv/config ./src/server"
+    "dev": "npx nodemon -r dotenv/config ./src/server",
+    "createdb": "npx sequelize-cli db:create",
+    "migratedb": "npx sequelize-cli db:migrate",
+    "seeddb": "npx sequelize-cli db:seed:all"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aes-js": "^3.1.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.10.1",
+    "sequelize": "^6.37.3"
   }
 }
