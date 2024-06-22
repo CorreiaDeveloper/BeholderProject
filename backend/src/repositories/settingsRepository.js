@@ -13,9 +13,9 @@ function getSettings(id){
 async function updateSettings(id, newSettings) {
     const currentSettings = await getSettings(id);
 
-    if(newSettings.email !== currentSettings.email)
+    if(newSettings.email && newSettings.email !== currentSettings.email)
         currentSettings.email = newSettings.email;
-    
+
     if(newSettings.password)
         currentSettings.password = bcrypt.hashSync(newSettings.password);
 
