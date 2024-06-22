@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom'
 import { getSettings, updateSettings } from '../../services/SettingsService';
 import Menu from '../../components/Menu/Menu'
+import Symbols from './Symbols';
 
 function Settings() {
 
@@ -112,7 +113,7 @@ function Settings() {
                                 <div className='row'>
                                     <div className="col-sm-12 mb-3">
                                         <div className="form-group">
-                                            <label for="apiUrl">API URL</label>
+                                            <label htmlFor="apiUrl">API URL</label>
                                             <input ref={inputApiUrl} className="form-control" id="apiUrl" type="text" placeholder="Enter the API URL" required />
                                         </div>
                                     </div>
@@ -120,7 +121,7 @@ function Settings() {
                                 <div className='row'>
                                     <div className="col-sm-12 mb-3">
                                         <div className="form-group">
-                                            <label for="apiUrl">Access Key</label>
+                                            <label htmlFor="apiUrl">Access Key</label>
                                             <input ref={inputAccessKey} className="form-control" id="accessKey" type="text" placeholder="Enter the API Access Key" required />
                                         </div>
                                     </div>
@@ -128,7 +129,7 @@ function Settings() {
                                 <div className='row'>
                                     <div className="col-sm-12 mb-3">
                                         <div className="form-group">
-                                            <label for="apiUrl">New Secret Key</label>
+                                            <label htmlFor="apiUrl">New Secret Key</label>
                                             <input ref={inputSecretKey} className="form-control" id="secretKey" type="password" placeholder="Enter your new API Secret Key" />
                                         </div>
                                     </div>
@@ -156,6 +157,7 @@ function Settings() {
                         </div>
                     </div>
                 </div>
+               <Symbols />
             </main>
         </React.Fragment>
     )
