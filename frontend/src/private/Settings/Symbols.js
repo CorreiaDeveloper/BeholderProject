@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getSymbols } from "../../services/SymbolsService";
+import { getSymbols, syncSymbols } from "../../services/SymbolsService";
 import { useHistory } from "react-router-dom";
 import SymbolRow from "./SymbolRow";
+import SelectQuote, {getDefaultQuote, filterSymbolObjects, setDefaultQuote} from "../../components/SelectQuote/SelectQuote";
 
 function Symbols() {
 
@@ -9,12 +10,14 @@ function Symbols() {
     const [symbols, setSymbols] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [quote, setQuote] = useState(getDefaultQuote());
 
     useEffect(() => {
         const token = localStorage.getItem('token')
         getSymbols(token)
             .then(symbols => {
-                setSymbols(symbols);
+                setSymbols(filterSymbolObjects(symbols, quote));
             })
             .catch(err => {
                 if (err.response && err.response.status === 401) history.push('/');
@@ -22,7 +25,26 @@ function Symbols() {
                 setError(err.message);
                 setSuccess('');
             });
-    }, [])
+    }, [isSyncing, quote])
+
+    function onSyncClick(event) {
+        const token = localStorage.getItem('token');
+        setIsSyncing(true);
+        syncSymbols(token)
+        .then(response => setIsSyncing(false))
+        .catch(err => {
+            if (err.response && err.response.status === 401) history.push('/');
+            console.error(err.message);
+            setError(err.message);
+            setSuccess('');
+        });
+
+    }
+
+    function onQuoteChange(event) {
+        setQuote(event.target.value);
+        setDefaultQuote(event.target.value);
+    }
 
     return (
         <React.Fragment>
@@ -34,6 +56,9 @@ function Symbols() {
                                 <div className="row align-items-center">
                                     <div className="col">
                                         <h2 className="fs-5 fw-bold mb-0">Symbols</h2>
+                                    </div>
+                                    <div className="col">
+                                        <SelectQuote onChange={onQuoteChange} />
                                     </div>
                                 </div>
                             </div>
@@ -53,9 +78,9 @@ function Symbols() {
                                     <tfoot>
                                         <tr>
                                             <td colSpan="2">
-                                                <button className="btn btn-primary animate-up-2" type="button">
+                                                <button className="btn btn-primary animate-up-2" type="button" onClick={onSyncClick}>
                                                     <svg className="icon icon-xs" data-slot="icon" fill="none" strokeWidth="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"></path></svg>
-                                                    Sync
+                                                    {isSyncing ? "Syncing..." : "Sync"}
                                                 </button>
                                             </td>
                                             <td>
