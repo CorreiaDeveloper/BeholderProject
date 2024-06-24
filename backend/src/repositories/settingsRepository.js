@@ -2,6 +2,22 @@ const settingsModel = require('../models/settingsModel')
 const bcrypt = require('bcryptjs'); 
 const crypto = require('../utils/crypto'); 
 
+const settingsCache= {};
+async function getDecryptedSettings(id){
+    let settings = settingsCache[id];
+
+    if(!settings){
+        settings = await getSettings(id);
+        settings.secretKey = crypto.decrypt(settings.secretKey);
+        settingsCache[id] = settings;
+    }
+    return settings;
+}
+
+function clearSettingsCache(id){
+    settingsCache[id] = null;
+}
+
 function getSettingsByEmail(email) {
     return settingsModel.findOne({ where: { email } });
 }
@@ -34,5 +50,6 @@ async function updateSettings(id, newSettings) {
 module.exports = { 
     getSettingsByEmail,
     getSettings,
-    updateSettings
+    updateSettings,
+    getDecryptedSettings
 }
