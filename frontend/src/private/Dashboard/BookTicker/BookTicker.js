@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import SelectQuote, { filterSymbolNames, getDefaultQuote } from '../../../components/SelectQuote/SelectQuote';
 import { getSymbols } from '../../../services/SymbolsService';
-import TickerRow from './TickerRow';
-import '../Dashboard.css';
-
+import '../Dashboard.css'
+import BookRow from './BookRow';
+import SelectQuote, { filterSymbolNames, getDefaultQuote } from '../../../components/SelectQuote/SelectQuote';
 /**
  * props:
  * - data: the market data
  */
-function MiniTicker(props) {
+function BookTicker(props) {
 
     const [symbols, setSymbols] = useState([]);
 
@@ -22,19 +21,19 @@ function MiniTicker(props) {
         const token = localStorage.getItem("token");
 
         getSymbols(token)
-            .then(symbols => setSymbols(filterSymbolNames(symbols, quote)))
+            .then((symbols) => setSymbols(filterSymbolNames(symbols, quote)))
             .catch(err => {
                 console.error(err.response ? err.response.data : err.message);
             })
     }, [quote]);
 
     return (<React.Fragment>
-        <div className="col-12 mb-4">
+        <div className="col-sm-12 col-md-6 mb-4">
             <div className="card border-0 shadow">
                 <div className="card-header">
                     <div className="row">
                         <div className="col">
-                            <h2 className="fs-5 fw-bold mb-0">Market 24h</h2>
+                            <h2 className="fs-5 fw-bold mb-0">Order Book</h2>
                         </div>
                         <div className="col offset-md-3">
                             <SelectQuote onChange={onQuoteChange} />
@@ -45,20 +44,18 @@ function MiniTicker(props) {
                     <table className="table align-items-center table-flush table-sm table-hover tableFixHead">
                         <thead className="thead-light">
                             <tr>
-                                <th className="border-bottom" scope="col">SYMBOL</th>
-                                <th className="border-bottom col-2" scope="col">CLOSE</th>
-                                <th className="border-bottom col-2" scope="col">OPEN</th>
-                                <th className="border-bottom col-2" scope="col">HIGH</th>
-                                <th className="border-bottom col-2" scope="col">LOW</th>
+                                <th className="border-bottom col-2" scope="col">SYMBOL</th>
+                                <th className="border-bottom col-2" scope="col">BID</th>
+                                <th className="border-bottom col-2" scope="col">ASK</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 symbols && symbols.length
-                                ? symbols.map(item => (
-                                    <TickerRow key={item} symbol={item} data={props.data[item]} />
-                                ))
-                                : <React.Fragment></React.Fragment>
+                                    ? symbols.map(item => (
+                                        <BookRow key={item} symbol={item} data={props.data[item]} />
+                                    ))
+                                    : <React.Fragment></React.Fragment>
                             }
                         </tbody>
                     </table>
@@ -68,4 +65,4 @@ function MiniTicker(props) {
     </React.Fragment>);
 }
 
-export default MiniTicker;
+export default BookTicker;
