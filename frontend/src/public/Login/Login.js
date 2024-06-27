@@ -25,7 +25,7 @@ function Login() {
             .then(response => {
                 if (response){
                     localStorage.setItem('token', response.token);
-                    history.push('/settings');
+                    history.push('/dashboard');
                 }
             })
             .catch(err => {
