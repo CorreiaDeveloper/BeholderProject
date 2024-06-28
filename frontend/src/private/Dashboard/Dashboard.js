@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import Menu from '../../components/Menu/Menu';
-import LineChart from './LineChart';
 import MiniTicker from './MiniTicker/MiniTicker';
 import BookTicker from './BookTicker/BookTicker';
 import Wallet from './Wallet/Wallet';
+import CandleChart from './CandleChart';
 
 function Dashboard() {
 
@@ -43,7 +43,7 @@ function Dashboard() {
                         <h1 className='h4'>Dashboard</h1>
                     </div>
                 </div>
-                <LineChart />
+                <CandleChart symbol="BTCUSD"/>
                 <MiniTicker data={miniTickerState} />
                 <div className='row'>
                     <BookTicker data={bookState} />
