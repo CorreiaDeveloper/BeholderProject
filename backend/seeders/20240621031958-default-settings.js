@@ -12,6 +12,7 @@ module.exports = {
         email: 'gabrielcorreiajobs@hotmail.com',
         password: bcrypt.hashSync('123456'),
         apiUrl: 'https://testnet.binance.vision/api/',
+        streamUrl: 'wss://stream.testnet.binance.vision/ws',
         accessKey: 'X13zDk5H1wXyuxBpwO4ghe3kwBo86LO8gmeOK6JhF6QyWcxVr0dgDBEXzeVO2DsF',
         secretKey: crypto.encrypt('fgOWiajLfXOr6HwgZLcqA0ZVL12dENh8C4YOLGsZ9mmSWlt0oiiB3OsED7S03uxO'),
         createdAt: new Date(),

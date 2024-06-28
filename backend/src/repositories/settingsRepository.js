@@ -1,12 +1,12 @@
 const settingsModel = require('../models/settingsModel')
-const bcrypt = require('bcryptjs'); 
-const crypto = require('../utils/crypto'); 
+const bcrypt = require('bcryptjs');
+const crypto = require('../utils/crypto');
 
-const settingsCache= {};
-async function getDecryptedSettings(id){
+const settingsCache = {};
+async function getSetingsDecrypted(id) {
     let settings = settingsCache[id];
 
-    if(!settings){
+    if (!settings) {
         settings = await getSettings(id);
         settings.secretKey = crypto.decrypt(settings.secretKey);
         settingsCache[id] = settings;
@@ -14,7 +14,7 @@ async function getDecryptedSettings(id){
     return settings;
 }
 
-function clearSettingsCache(id){
+function clearSettingsCache(id) {
     settingsCache[id] = null;
 }
 
@@ -22,39 +22,49 @@ function getSettingsByEmail(email) {
     return settingsModel.findOne({ where: { email } });
 }
 
-function getSettings(id){
+function getSettings(id) {
     return settingsModel.findOne({ where: { id } });
 }
 
-function getDefaultSettings(){
-    return settingsModel.findOne();
+function clearSettingsCache(id) {
+    settingsCache[id] = null;
+}
+
+async function getDefaultSettings() {
+    const settings = await settingsModel.findOne();
+    return getSetingsDecrypted(settings.id);
 }
 
 async function updateSettings(id, newSettings) {
     const currentSettings = await getSettings(id);
 
-    if(newSettings.email && newSettings.email !== currentSettings.email)
+    if (newSettings.email && newSettings.email !== currentSettings.email)
         currentSettings.email = newSettings.email;
 
-    if(newSettings.password)
+    if (newSettings.password)
         currentSettings.password = bcrypt.hashSync(newSettings.password);
 
-    if(newSettings.apiUrl !== currentSettings.apiUrl)
+    if (newSettings.apiUrl !== currentSettings.apiUrl)
         currentSettings.apiUrl = newSettings.apiUrl;
 
-    if(newSettings.accessKey !== currentSettings.accessKey)
+    if (newSettings.streamUrl !== currentSettings.streamUrl)
+        currentSettings.streamUrl = newSettings.streamUrl;
+
+    if (newSettings.accessKey !== currentSettings.accessKey)
         currentSettings.accessKey = newSettings.accessKey;
 
-    if(newSettings.secretKey)
+    if (newSettings.secretKey) {
         currentSettings.secretKey = crypto.encrypt(newSettings.secretKey);
+        clearSettingsCache(id)
+    }
 
     await currentSettings.save();
 }
 
-module.exports = { 
+module.exports = {
     getSettingsByEmail,
     getSettings,
     updateSettings,
-    getDecryptedSettings,
-    getDefaultSettings
+    getSetingsDecrypted,
+    getDefaultSettings,
 }

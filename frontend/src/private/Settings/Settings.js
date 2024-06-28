@@ -10,6 +10,7 @@ function Settings() {
     const inputNewPassword = useRef('');
     const inputConfirmPassword = useRef('');
     const inputApiUrl = useRef('');
+    const inputStreamUrl = useRef('');
     const inputAccessKey = useRef('');
     const inputSecretKey = useRef('');
 
@@ -25,6 +26,7 @@ function Settings() {
             .then(settings => {
                 inputEmail.current.value = settings.email;
                 inputApiUrl.current.value = settings.apiUrl;
+                inputStreamUrl.current.value = settings.streamUrl;
                 inputAccessKey.current.value = settings.accessKey;
             })
             .catch(err => {
@@ -41,9 +43,9 @@ function Settings() {
     function onFormSubmit(event) {
         event.preventDefault();
 
-        if((inputNewPassword.current.value || inputConfirmPassword.current.value) 
-            && inputNewPassword.current.value !== inputConfirmPassword.current.value){
-                return setError(`The fields New Password and Confirm Password must be equals.`)
+        if ((inputNewPassword.current.value || inputConfirmPassword.current.value)
+            && inputNewPassword.current.value !== inputConfirmPassword.current.value) {
+            return setError(`The fields New Password and Confirm Password must be equals.`)
         }
 
         const token = localStorage.getItem('token');
@@ -51,26 +53,27 @@ function Settings() {
             email: inputEmail.current.value,
             password: inputNewPassword.current.value ? inputNewPassword.current.value : null,
             apiUrl: inputApiUrl.current.value,
+            streamUrl: inputStreamUrl.current.value,
             accessKey: inputAccessKey.current.value,
             secretKey: inputSecretKey.current.value ? inputSecretKey.current.value : null
         }, token)
-        .then(result => {
-            if(result){
-                setError('');
-                setSuccess(`Settings updated successfully.`);
-                inputSecretKey.current.value = '';
-                inputNewPassword.current.value = '';
-                inputConfirmPassword.current.value = '';
-            }
-            else{
-                setSuccess('');
+            .then(result => {
+                if (result) {
+                    setError('');
+                    setSuccess(`Settings updated successfully.`);
+                    inputSecretKey.current.value = '';
+                    inputNewPassword.current.value = '';
+                    inputConfirmPassword.current.value = '';
+                }
+                else {
+                    setSuccess('');
+                    setError(`Can't update the settings.`);
+                }
+            })
+            .catch(error => {
+                console.error(error.message);
                 setError(`Can't update the settings.`);
-            }
-        })
-        .catch(error => {
-            console.error(error.message);
-            setError(`Can't update the settings.`);
-        })
+            })
     }
 
     return (
@@ -121,6 +124,14 @@ function Settings() {
                                 <div className='row'>
                                     <div className="col-sm-12 mb-3">
                                         <div className="form-group">
+                                            <label htmlFor="streamUrl">STREAM URL</label>
+                                            <input ref={inputStreamUrl} className="form-control" id="streamUrl" type="text" placeholder="Enter the STREAM URL" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className="col-sm-12 mb-3">
+                                        <div className="form-group">
                                             <label htmlFor="apiUrl">Access Key</label>
                                             <input ref={inputAccessKey} className="form-control" id="accessKey" type="text" placeholder="Enter the API Access Key" required />
                                         </div>
@@ -142,14 +153,14 @@ function Settings() {
                                             </button>
                                         </div>
                                         {
-                                            error ? 
-                                            <div className='alert alert-danger mt-2 col-9 py-2'>{error}</div>
-                                            : <React.Fragment></React.Fragment>
+                                            error ?
+                                                <div className='alert alert-danger mt-2 col-9 py-2'>{error}</div>
+                                                : <React.Fragment></React.Fragment>
                                         }
                                         {
                                             success ?
-                                            <div className='alert alert-success mt-2 col-9 py-2'>{success}</div>
-                                            : <React.Fragment></React.Fragment>
+                                                <div className='alert alert-success mt-2 col-9 py-2'>{success}</div>
+                                                : <React.Fragment></React.Fragment>
                                         }
                                     </div>
                                 </div>
@@ -157,7 +168,7 @@ function Settings() {
                         </div>
                     </div>
                 </div>
-               <Symbols />
+                <Symbols />
             </main>
         </React.Fragment>
     )
