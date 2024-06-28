@@ -28,10 +28,8 @@ function Dashboard() {
                   if(lastJsonMessage.balance) setBalanceState(lastJsonMessage.balance);
             }
         },
-        queryParams: {},
-
+        queryParams: {"token": localStorage.getItem('token')},
         onError: (err) => console.error(err),
-
         shouldReconnect: (closeEvent) => true,
         reconnectInterval: 3000
     })
