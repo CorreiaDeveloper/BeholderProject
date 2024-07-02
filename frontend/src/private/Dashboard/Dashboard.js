@@ -5,6 +5,8 @@ import MiniTicker from './MiniTicker/MiniTicker';
 import BookTicker from './BookTicker/BookTicker';
 import Wallet from './Wallet/Wallet';
 import CandleChart from './CandleChart';
+import NewOrderButton from '../../components/NewOrder/NewOrderButton';
+import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 
 function Dashboard() {
 
@@ -13,6 +15,12 @@ function Dashboard() {
     const [bookState, setBookState] = useState({});
 
     const [balanceState, setBalanceState] = useState({});
+
+    const [wallet, setWallet] = useState({});
+
+    function onWalletUpdate(walletObj){
+        setWallet(walletObj);
+    }
 
     const { lastJsonMessage } = useWebSocket(process.env.REACT_APP_WS_URL, {
 
@@ -42,14 +50,18 @@ function Dashboard() {
                     <div className='d-block mb-4 mb-md-0'>
                         <h1 className='h4'>Dashboard</h1>
                     </div>
+                    <div className='md-4'>
+                        <NewOrderButton />
+                    </div>
                 </div>
                 <CandleChart symbol="BTCUSD"/>
                 <MiniTicker data={miniTickerState} />
                 <div className='row'>
                     <BookTicker data={bookState} />
-                    <Wallet data={balanceState}/>
+                    <Wallet data={balanceState} onUpdate={onWalletUpdate}/>
                 </div>
             </main>
+            <NewOrderModal wallet={wallet}/>
         </React.Fragment>
     );
 }

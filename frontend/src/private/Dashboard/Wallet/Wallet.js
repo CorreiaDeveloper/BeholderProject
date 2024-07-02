@@ -3,12 +3,10 @@ import { getBalance } from '../../../services/ExchangeService';
 import '../Dashboard.css';
 /**
  * props:
- * - data: the market data
+ * - data
+ * - onUpdate
  */
 function Wallet(props) {
-
-    // if(!props || !props.data) return <React.Fragment></React.Fragment>;
-
     const [balances, setBalances] = useState([]);
 
     useEffect(() => {
@@ -23,6 +21,8 @@ function Wallet(props) {
                         onOrder: item[1].onOrder
                     }
                 })
+
+                if(props.onUpdate) props.onUpdate(balances);
                 setBalances(balances);
             })
             .catch(err => {
@@ -54,8 +54,8 @@ function Wallet(props) {
                                 balances.map(item => (
                                     <tr key={`wallet${item.symbol}`}>
                                         <td className='text-gray-900'>{item.symbol}</td>
-                                        <td className='text-gray-900'>{item.available.substring(0, 8)}</td>
-                                        <td className='text-gray-900'>{item.onOrder.substring(0, 8)}</td>
+                                        <td className='text-gray-900'>{item.available.substring(0, 10)}</td>
+                                        <td className='text-gray-900'>{item.onOrder.substring(0, 10)}</td>
                                     </tr>
                                 ))
                             }
