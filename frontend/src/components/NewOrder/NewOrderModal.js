@@ -8,7 +8,13 @@ import OrderType from './OrderType';
 import QuantityInput from './QuantityInput';
 import { STOP_TYPES } from '../../services/ExchangeService';
 import { useHistory } from 'react-router-dom';
+import { placeOrder } from '../../services/OrdersService';
 
+/**
+ * props:
+ * - wallet
+ * - onSubmit
+*/
 function NewOrderModal(props) {
 
     const [error, setError] = useState('');
@@ -43,13 +49,22 @@ function NewOrderModal(props) {
 
 
     function onSubmit(event) {
-        console.log('click')
+        const token = localStorage.getItem('token');
+        placeOrder(order, token)
+        .then(result => {
+            btnClose.current.click();
+            if(props.onSubmit) props.onSubmit(result);
+        })
+        .catch(err => {
+            if(err.response && err.response.status === 401){
+                btnClose.current.click();
+                return history.push('/');
+            }
+            console.error(err);
+            setError(err.body);
+        })
     }
-
-    function onSubmit(event) {
-        console.log('click');
-    }
-
+    
     function onInputChange(event) {
         setOrder(prevState => ({ ...prevState, [event.target.id]: event.target.value }));
     }

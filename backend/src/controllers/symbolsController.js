@@ -22,7 +22,7 @@ async function getSymbol(req, res, next) {
 async function syncSymbols(req, res, next) {
     const favoriteSymbols = (await symbolsRepository.getSymbols()).filter(s => s.isFavorite).map(s => s.symbol);
     const settingsRepository = require('../repositories/settingsRepository');
-    const settings = await settingsRepository.getSetingsDecrypted(res.locals.token.id);
+    const settings = await settingsRepository.getDecryptedSettings(res.locals.token.id);
     const { exchangeInfo } = require('../utils/exchange')(settings.get({ plain: true }));
     const symbols = (await exchangeInfo()).symbols.map(item => {
         
