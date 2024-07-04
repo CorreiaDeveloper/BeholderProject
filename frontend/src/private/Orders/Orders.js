@@ -6,7 +6,7 @@ import { getBalance } from '../../services/ExchangeService';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { getOrders } from '../../services/OrdersService';
 import OrderRow from './OrderRow';
-import OrdersPagination from './OrdersPagination';
+import Pagination from '../../components/Pagination/Pagination';
 import SearchSymbol from '../../components/SearchSymbol/SearchSymbol';
 import ViewOrderModal from './ViewOrderModal';
 
@@ -57,7 +57,7 @@ function Orders() {
                 setOrders(result.rows);
                 setCount(result.count)
             })
-            .catch(err => errorProcedure())
+            .catch(err => errorProcedure(err))
     }
 
     useEffect(() => {
@@ -125,7 +125,7 @@ function Orders() {
                             }
                         </tbody>
                     </table>
-                    <OrdersPagination count={count} />
+                    <Pagination count={count} />
                 </div>
             </main>
             <ViewOrderModal data={viewOrder} />

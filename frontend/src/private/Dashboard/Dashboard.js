@@ -8,6 +8,7 @@ import CandleChart from './CandleChart';
 import NewOrderButton from '../../components/NewOrder/NewOrderButton';
 import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 import { useHistory } from 'react-router-dom';
+import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
 
 function Dashboard() {
 
@@ -21,11 +22,13 @@ function Dashboard() {
 
     const [wallet, setWallet] = useState({});
 
-    function onWalletUpdate(walletObj){
+    const [chartSymbol, setChartSymbol] = useState("BTCUSD");
+
+    function onWalletUpdate(walletObj) {
         setWallet(walletObj);
     }
 
-    function onOrderSubmit(order){
+    function onOrderSubmit(order) {
         history.push('/orders/' + order.symbol);
     }
 
@@ -39,15 +42,19 @@ function Dashboard() {
                 else if (lastJsonMessage.book) {
                     lastJsonMessage.book.forEach(b => bookState[b.symbol] = b);
                     setBookState(bookState);
-                  }
-                  if(lastJsonMessage.balance) setBalanceState(lastJsonMessage.balance);
+                }
+                if (lastJsonMessage.balance) setBalanceState(lastJsonMessage.balance);
             }
         },
-        queryParams: {"token": localStorage.getItem('token')},
+        queryParams: { "token": localStorage.getItem('token') },
         onError: (err) => console.error(err),
         shouldReconnect: (closeEvent) => true,
         reconnectInterval: 3000
     })
+
+    function onChangeSymbol(event) {
+        setChartSymbol(event.target.value);
+    }
 
     return (
         <React.Fragment>
@@ -57,18 +64,23 @@ function Dashboard() {
                     <div className='d-block mb-4 mb-md-0'>
                         <h1 className='h4'>Dashboard</h1>
                     </div>
-                    <div className='md-4'>
-                        <NewOrderButton />
+                    <div className='btn-toolbar mb-md-0'>
+                        <div className='d-inline-flex align-items-center'>
+                            <SelectSymbol onChange={onChangeSymbol} />
+                        </div>
+                        <div className='ms-2 ms-lg-3'>
+                            <NewOrderButton />
+                        </div>
                     </div>
                 </div>
-                <CandleChart symbol="BTCUSD"/>
+                <CandleChart symbol={chartSymbol} />
                 <MiniTicker data={miniTickerState} />
                 <div className='row'>
                     <BookTicker data={bookState} />
-                    <Wallet data={balanceState} onUpdate={onWalletUpdate}/>
+                    <Wallet data={balanceState} onUpdate={onWalletUpdate} />
                 </div>
             </main>
-            <NewOrderModal wallet={wallet} onSubmit={onOrderSubmit}/>
+            <NewOrderModal wallet={wallet} onSubmit={onOrderSubmit} />
         </React.Fragment>
     );
 }
