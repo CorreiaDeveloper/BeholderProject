@@ -18,12 +18,12 @@ function OrderRow(props) {
 
     function getStatusClass(status) {
         switch (status) {
-            case 'PARTIALLY_FILLED': return 'text-info';
-            case 'FILLED': return 'text-success';
+            case 'PARTIALLY_FILLED': return 'badge bg-info';
+            case 'FILLED': return 'badge bg-success';
             case 'REJECTED':
             case 'EXPIRED':
-            case 'CANCELED': return 'text-danger';
-            default: return 'fw-normal';
+            case 'CANCELED': return 'badge bg-danger';
+            default: return 'badge bg-primary';
         }
     }
 

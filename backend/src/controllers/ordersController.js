@@ -66,8 +66,53 @@ async function cancelOrder(req, res, next) {
     res.json(order.get({ plain: true }));
 }
 
+async function syncOrder(req, res, next) {
+    const id = res.locals.token.id;
+    const settings = await settingsRepository.getDecryptedSettings(id);
+    const exchange = require('../utils/exchange')(settings);
+
+    const beholderOrderId = req.params.id;
+    const order = await ordersRepository.getOrderById(beholderOrderId);
+    if (!order) return res.sendStatus(404);
+
+    let binanceOrder, binanceTrade;
+    try {
+        binanceOrder = await exchange.orderStatus(order.symbol, order.orderId);
+        order.status = binanceOrder.status;
+        order.transactTime = binanceOrder.updateTime;
+
+        if (binanceOrder.status !== 'FILLED') {
+            await order.save();
+            return res.json(order);
+        }
+
+        binanceTrade = await exchange.orderTrade(order.symbol, order.orderId);
+    }
+    catch (err) {
+        console.error(err);
+        return res.sendStatus(404);
+    }
+
+    const quoteQuantity = parseFloat(binanceOrder.cummulativeQuoteQty);
+    order.avgPrice = quoteQuantity / parseFloat(binanceOrder.executedQty);
+    order.isMaker = binanceTrade.isMaker;
+    order.commission = binanceTrade.commission;
+
+    const isQuoteCommission = binanceTrade.commissionAsset && order.symbol.endsWith(binanceTrade.commissionAsset);
+    if (isQuoteCommission)
+        order.net = quoteQuantity - parseFloat(binanceTrade.commission);
+    else 
+        order.net = quoteQuantity;
+
+        await order.save();
+
+        res.json(order);
+
+}
+
 module.exports = {
     getOrders,
     placeOrder,
-    cancelOrder
+    cancelOrder,
+    syncOrder
 };
