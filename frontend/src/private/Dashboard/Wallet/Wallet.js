@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { getBalance } from '../../../services/ExchangeService';
 import '../Dashboard.css';
+import { useHistory } from 'react-router-dom';
 /**
  * props:
  * - data
  * - onUpdate
  */
 function Wallet(props) {
+
+    const history = useHistory();
+
     const [balances, setBalances] = useState([]);
 
-    useEffect(() => {
+    function getBalanceCall() {
         const token = localStorage.getItem("token");
 
         getBalance(token)
-            .then(info => {
+            .then((info) => {
                 const balances = Object.entries(info).map(item => {
                     return {
                         symbol: item[0],
@@ -21,14 +25,31 @@ function Wallet(props) {
                         onOrder: item[1].onOrder
                     }
                 })
+                    .sort((a, b) => {
+                        if (a.symbol > b.symbol) return 1;
+                        if (a.symbol < b.symbol) return -1;
+                        return 0;
+                    });
 
-                if(props.onUpdate) props.onUpdate(balances);
+                if (props.onUpdate)
+                    props.onUpdate(balances);
+
                 setBalances(balances);
             })
             .catch(err => {
-                console.error(err.response ? err.response.data : err.message);
+                if(err.response && err.response.stauts === 401) return history.pushState('/');
+                console.error(err);
             })
-    }, [props.data]);
+    }
+
+    useEffect(() => {
+        if (props.data && Object.entries(props.data).length)
+            setBalances(props.data);
+        else
+            getBalanceCall();
+    }, [props.data])
+
+
 
     return (
         <div className='col-md-6 col-sm-12 mb-4'>

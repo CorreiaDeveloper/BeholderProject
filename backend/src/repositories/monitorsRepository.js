@@ -24,7 +24,7 @@ function getMonitor(id) {
     return monitorModel.findByPk(id);
 }
 
-function getActiveMonitor() {
+function getActiveMonitors() {
     return monitorModel.findAll({ where: { isActive: true } });
 }
 
@@ -87,7 +87,7 @@ module.exports = {
     insertMonitor,
     deleteMonitor,
     getMonitor,
-    getActiveMonitor,
+    getActiveMonitors,
     getMonitors,
     updateMonitor
 }
