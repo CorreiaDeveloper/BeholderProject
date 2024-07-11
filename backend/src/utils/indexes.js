@@ -2,7 +2,12 @@ const technicalindicators = require('technicalindicators');
 
 const indexKeys = {
     RSI: 'RSI',
-    MACD: 'MACD'
+    MACD: 'MACD',
+    MINI_TICKER: 'MINI_TICKER',
+    BOOK: 'BOOK',
+    WALLET: 'WALLET',
+    LAST_ORDER: 'LAST_ORDER',
+    LAST_CANDLE: 'LAST_CANDLE'
 }
 
 function RSI(closes, period = 14) {

@@ -3,6 +3,7 @@ const app = require('./app');
 const settingsRepository = require('./repositories/settingsRepository');
 const appEm = require('./app-em');
 const appWs = require('./app-ws');
+const beholder = require('./beholder');
 
 (async () => {
     console.log('Getting the default settings');
@@ -11,6 +12,7 @@ const appWs = require('./app-ws');
     if(!settings) return new Error(`There is not settings`);
 
     console.log(`Initializing the Beholder Brain...`)
+    beholder.init([]);
 
     console.log(`Starting the Server Apps...`)
     const server = app.listen(process.env.PORT, () => {
@@ -19,6 +21,6 @@ const appWs = require('./app-ws');
 
     const wss = appWs(server);
 
-    await appEm.init(settings, wss, {});
+    await appEm.init(settings, wss, beholder);
 
 })();
