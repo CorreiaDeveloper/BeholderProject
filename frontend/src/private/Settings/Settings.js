@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom'
 import { getSettings, updateSettings } from '../../services/SettingsService';
 import Menu from '../../components/Menu/Menu'
 import Symbols from './Symbols';
+import Footer from '../../components/Footer/Footer';
 
 function Settings() {
 
@@ -13,8 +13,6 @@ function Settings() {
     const inputStreamUrl = useRef('');
     const inputAccessKey = useRef('');
     const inputSecretKey = useRef('');
-
-    const history = useHistory();
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -30,13 +28,8 @@ function Settings() {
                 inputAccessKey.current.value = settings.accessKey;
             })
             .catch(err => {
-                if (err.response && err.response.status === 401)
-                    return history.push('/');
-
-                if (err.response)
-                    setError(err.response.data);
-                else
-                    setError(err.message);
+                console.error(err.response ? err.response.data : err.message);
+                setError(err.response ? err.response.data : err.message);
             });
     }, [])
 
@@ -70,8 +63,8 @@ function Settings() {
                     setError(`Can't update the settings.`);
                 }
             })
-            .catch(error => {
-                console.error(error.message);
+            .catch(err => {
+                console.error(err.response ? err.response.data : err.message);
                 setError(`Can't update the settings.`);
             })
     }
@@ -169,6 +162,7 @@ function Settings() {
                     </div>
                 </div>
                 <Symbols />
+                <Footer />
             </main>
         </React.Fragment>
     )

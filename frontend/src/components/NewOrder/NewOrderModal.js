@@ -7,7 +7,6 @@ import SelectSide from './SelectSide';
 import OrderType from './OrderType';
 import QuantityInput from './QuantityInput';
 import { STOP_TYPES } from '../../services/ExchangeService';
-import { useHistory } from 'react-router-dom';
 import { placeOrder } from '../../services/OrdersService';
 
 /**
@@ -19,8 +18,6 @@ function NewOrderModal(props) {
 
     const [error, setError] = useState('');
     const [isVisible, setIsVisible] = useState(false);
-    const history = useHistory();
-
     useEffect(() => {
         const modal = document.getElementById('modalOrder');
         modal.addEventListener('hidden.bs.modal', (event) => {
@@ -56,12 +53,8 @@ function NewOrderModal(props) {
                 if (props.onSubmit) props.onSubmit(result);
             })
             .catch(err => {
-                if (err.response && err.response.status === 401) {
-                    btnClose.current.click();
-                    return history.push('/');
-                }
-                console.error(err);
-                setError(err.body);
+                console.error(err.response ? err.response.data : err.message);
+                setError(err.response ? err.response.data : err.message);
             })
     }
 
@@ -78,11 +71,7 @@ function NewOrderModal(props) {
         getSymbol(order.symbol, token)
             .then(symbolObject => setSymbol(symbolObject))
             .catch(err => {
-                if (err.response && err.response.status === 401) {
-                    btnClose.current.click();
-                    return history.push('/');
-                }
-                console.error(err.response ? err.response.data : err.message)
+                console.error(err.response ? err.response.data : err.message);
                 setError(err.response ? err.response.data : err.message);
             })
     }, [order.symbol])

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from './BaseService';
 
 const SYMBOLS_URL = `${process.env.REACT_APP_API_URL}/symbols/`;
 

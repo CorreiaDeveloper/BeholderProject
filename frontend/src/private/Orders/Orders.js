@@ -9,6 +9,7 @@ import OrderRow from './OrderRow';
 import Pagination from '../../components/Pagination/Pagination';
 import SearchSymbol from '../../components/SearchSymbol/SearchSymbol';
 import ViewOrderModal from './ViewOrderModal';
+import Footer from '../../components/Footer/Footer';
 
 function Orders() {
 
@@ -30,11 +31,6 @@ function Orders() {
     const [count, setCount] = useState(0);
     const [page, setPage] = useState(parseInt(getPage()));
 
-    function errorProcedure(err) {
-        if (err.response && err.response.status === 401) return history.push('/')
-        console.error(err);
-    }
-
     function getBalanceCall(token) {
         getBalance(token)
             .then(info => {
@@ -48,7 +44,7 @@ function Orders() {
 
                 setBalances(balances);
             })
-            .catch(err => errorProcedure(err))
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     function getOrdersCall(token) {
@@ -57,7 +53,7 @@ function Orders() {
                 setOrders(result.rows);
                 setCount(result.count)
             })
-            .catch(err => errorProcedure(err))
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     useEffect(() => {
@@ -80,7 +76,7 @@ function Orders() {
         setSearch(event.target.value);
     }
 
-    function onViewClick(event){
+    function onViewClick(event) {
         const id = parseInt(event.target.id.replace("view", ""));
         setViewOrder(orders.find(o => o.id === id));
     }
@@ -119,7 +115,7 @@ function Orders() {
                             {
                                 orders
                                     ? orders.map(order => (
-                                        <OrderRow key={order.clientOrderId} data={order} onClick={onViewClick}/>
+                                        <OrderRow key={order.clientOrderId} data={order} onClick={onViewClick} />
                                     ))
                                     : <React.Fragment></React.Fragment>
                             }
@@ -127,6 +123,7 @@ function Orders() {
                     </table>
                     <Pagination count={count} />
                 </div>
+                <Footer />
             </main>
             <ViewOrderModal data={viewOrder} />
             <NewOrderModal wallet={balances} onSubmit={onOrderSubmit} />

@@ -9,6 +9,7 @@ import NewOrderButton from '../../components/NewOrder/NewOrderButton';
 import NewOrderModal from '../../components/NewOrder/NewOrderModal';
 import { useHistory } from 'react-router-dom';
 import SelectSymbol from '../../components/SelectSymbol/SelectSymbol';
+import Footer from '../../components/Footer/Footer';
 
 function Dashboard() {
 
@@ -79,6 +80,7 @@ function Dashboard() {
                     <BookTicker data={bookState} />
                     <Wallet data={balanceState} onUpdate={onWalletUpdate} />
                 </div>
+                <Footer />
             </main>
             <NewOrderModal wallet={wallet} onSubmit={onOrderSubmit} />
         </React.Fragment>
