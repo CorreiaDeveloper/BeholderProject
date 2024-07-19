@@ -3,8 +3,9 @@ import { useLocation, useHistory } from "react-router-dom";
 import Menu from "../../components/Menu/Menu";
 import Pagination from "../../components/Pagination/Pagination";
 import Footer from "../../components/Footer/Footer";
-import { getMonitors } from "../../services/MonitorsService";
+import { getMonitors, deleteMonitor, startMonitor, stopMonitor } from "../../services/MonitorsService";
 import MonitorRow from "./MonitorRow";
+import MonitorModal from "./MonitorModal/MonitorModal";
 
 function Monitors() {
 
@@ -26,6 +27,12 @@ function Monitors() {
     const [count, setCount] = useState(0);
     const [page, setPage] = useState(getPage());
     const [monitors, setMonitors] = useState([]);
+    const [editMonitor, setEditMonitor] = useState({
+        type: 'CANDLES',
+        interval: '1m',
+        isActive: false,
+        logs: false
+    });
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -38,19 +45,36 @@ function Monitors() {
     }, [page])
 
     function onEditClick(event) {
-        console.log('onEditClick');
+        const id = event.target.id.replace('edit', '');
+        setEditMonitor(monitors.find(m => m.id == id));
     }
 
     function onStopClick(event) {
-        console.log('onStopClick');
+        const id = event.target.id.replace('stop', '');
+        const token = localStorage.getItem('token');
+        stopMonitor(id, token)
+            .then(monitor => { history.go(0) })
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     function onStartClick(event) {
-        console.log('onStartClick');
+        const id = event.target.id.replace('start', '');
+        const token = localStorage.getItem('token');
+        startMonitor(id, token)
+            .then(monitor => { history.go(0) })
+            .catch(err => console.error(err.response ? err.response.data : err.message));
     }
 
     function onDeleteClick(event) {
-        console.log('onDeleteClick');
+        const id = event.target.id.replace('delete', '');
+        const token = localStorage.getItem('token');
+        deleteMonitor(id, token)
+            .then(monitor => { history.go(0) })
+            .catch(err => console.error(err.response ? err.response.data : err.message));
+    }
+
+    function onModalSubmit(event) {
+        history.go(0);
     }
 
     return (
@@ -94,6 +118,7 @@ function Monitors() {
                 </div>
                 <Footer />
             </main>
+            <MonitorModal data={editMonitor} onSubmit={onModalSubmit} />
         </React.Fragment>
     )
 }

@@ -7,7 +7,8 @@ const indexKeys = {
     BOOK: 'BOOK',
     WALLET: 'WALLET',
     LAST_ORDER: 'LAST_ORDER',
-    LAST_CANDLE: 'LAST_CANDLE'
+    LAST_CANDLE: 'LAST_CANDLE',
+    PREVIOUS_CANDLE: 'PREVIOUS_CANDLE'
 }
 
 function RSI(closes, period = 14) {

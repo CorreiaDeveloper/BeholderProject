@@ -68,11 +68,16 @@ module.exports = (settings) => {
     }
 
     async function chartStream(symbol, interval, callback) {
-        const binance = new Binance().options({ family: 0 });
+        // const binance = new Binance().options({ family: 0 });
         binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
             const ohlc = binance.ohlc(chart);
             callback(ohlc);
         })
+    }
+
+    function terminateChartStream(symbol, interval) {
+        binance.websockets.terminate(`${symbol.toLowerCase()}@kline_${interval}`);
+        console.log(`Chart Stream ${symbol.toLowerCase()}@kline_${interval} terminated!`);
     }
 
     return {
@@ -86,6 +91,7 @@ module.exports = (settings) => {
         cancel,
         orderStatus,
         orderTrade,
-        chartStream
+        chartStream,
+        terminateChartStream
     }
 }

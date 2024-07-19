@@ -70,7 +70,7 @@ async function updateMonitor(id, newMonitor) {
 
     if (newMonitor.isSystemMon !== null && newMonitor.isSystemMon !== undefined
         && newMonitor.isSystemMon !== currentMonitor.isSystemMon)
-        currentMonitor.isActive = newMonitor.isActive;
+        currentMonitor.isSystemMon = newMonitor.isSystemMon;
 
     if (newMonitor.logs !== null && newMonitor.logs !== undefined
         && newMonitor.logs !== currentMonitor.logs)
