@@ -84,7 +84,6 @@ function startStreamMonitor(monitor) {
 
 async function updateMonitor(req, res, next) {
     const id = req.params.id;
-
     const newMonitor = req.body;
 
     const currentMonitor = await monitorsRepository.getMonitor(id);
