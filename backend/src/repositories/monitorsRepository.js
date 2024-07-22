@@ -58,10 +58,10 @@ async function updateMonitor(id, newMonitor) {
     else
         currentMonitor.interval = null;
 
-    if (newMonitor.broadcastLabel && newMonitor.broadcastLabel !== currentMonitor.broadcastLabel)
+    if (newMonitor.broadcastLabel !== currentMonitor.broadcastLabel)
         currentMonitor.broadcastLabel = newMonitor.broadcastLabel;
 
-    if (newMonitor.indexes && newMonitor.indexes !== currentMonitor.indexes)
+    if (newMonitor.indexes !== currentMonitor.indexes)
         currentMonitor.indexes = newMonitor.indexes;
 
     if (newMonitor.isActive !== null && newMonitor.isActive !== undefined

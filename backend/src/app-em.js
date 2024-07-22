@@ -1,7 +1,7 @@
 const ordersRepository = require('./repositories/ordersRepository');
 const { orderStatus } = require('./repositories/ordersRepository');
 const { monitorTypes, getActiveMonitors } = require('./repositories/monitorsRepository');
-const { RSI, MACD, indexKeys } = require('./utils/indexes')
+const { RSI, MACD, StochRSI, BollingerBands, SMA, EMA, indexKeys } = require('./utils/indexes')
 
 let WSS, beholder, exchange;
 
@@ -95,7 +95,7 @@ function processExecutionData(executionData, broadcastLabel) {
 function startUserDataMonitor(broadcastLabel, logs) {
     if (!exchange) return new Error(`Exchange monitor not initialized yet!`);
 
-    const [balanceBroadcast, executionBroadcast] = broadcastLabel.split(',')
+    const [balanceBroadcast, executionBroadcast] = broadcastLabel ? broadcastLabel.split(',') : [null, null];
 
     loadWallet();
 
@@ -135,7 +135,7 @@ function startChartMonitor(symbol, interval, indexes, broadcastLabel, logs) {
 
         if (broadcastLabel && WSS) WSS.broadcast({ [broadcastLabel]: lastCandle })
 
-        processChartData(symbol, indexes, interval, ohlc)
+        processChartData(symbol, indexes, interval, ohlc, logs)
     });
 
     console.log(`Chart Monitor has started at ${symbol}_${interval}!`)
@@ -154,18 +154,32 @@ function stopChartMonitor(symbol, interval, indexes, logs) {
         indexes.map(ix => beholder.deleteMemory(symbol, ix, interval));
 }
 
-function processChartData(symbol, indexes, interval, ohlc) {
-    indexes.map(index => {
-        switch (index) {
-            case indexKeys.RSI: {
-                return beholder.updateMemory(symbol, indexKeys.RSI, interval, RSI(ohlc.close));
+function processChartData(symbol, indexes, interval, ohlc, logs) {
+    if (typeof indexes === 'string') indexes = indexes.split(',');
+    if (indexes && indexes.length > 0) {
+        indexes.map(index => {
+
+            const params = index.split('_');
+            const indexName = params[0];
+            params.splice(0, 1);
+
+            let calc;
+
+            switch (indexName) {
+                case indexKeys.RSI: calc = RSI(ohlc.close, ...params); break;
+                case indexKeys.MACD: calc = MACD(ohlc.close, ...params); break;
+                case indexKeys.SMA: calc = SMA(ohlc.close, ...params); break;
+                case indexKeys.EMA: calc = EMA(ohlc.close, ...params); break;
+                case indexKeys.BOLLINGER_BANDS: calc = BollingerBands(ohlc.close, ...params); break;
+                case indexKeys.STOCH_RSI: calc = StochRSI(ohlc.close, ...params); break;
+                default: return;
             }
-            case indexKeys.MACD: {
-                return beholder.updateMemory(symbol, indexKeys.MACD, interval, MACD(ohlc.close));
-            }
-            default: return;
-        }
-    })
+
+            if (logs) console.log(`${indexName} calculated: ${JSON.stringify(calc.current)}`);
+
+            return beholder.updateMemory(symbol, index, interval, calc);
+        })
+    }
 }
 
 

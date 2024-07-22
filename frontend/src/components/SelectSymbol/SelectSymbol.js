@@ -11,10 +11,14 @@ import { getSymbols } from '../../services/SymbolsService';
 function SelectSymbol(props) {
 
     const [symbols, setSymbols] = useState(["LOADING"])
-    const [onlyFavorites, SetOnlyFavorites] = useState(props.onlyFavorites === null || props.onlyFavorites === undefined ? true : props.onlyFavorites)
+    const [onlyFavorites, SetOnlyFavorites] = useState(showOnlyFavorites());
 
     const selectRef = useRef('');
     const buttonRef = useRef('');
+
+    function showOnlyFavorites() {
+        return props.onlyFavorites === null || props.onlyFavorites === undefined ? true : props.onlyFavorites;
+    }
 
     useEffect(() => {
         selectRef.current.value = props.symbol || 'BTCUSDT';
