@@ -5,6 +5,7 @@ const monitorTypes = {
     BOOK: 'BOOK',
     USER_DATA: 'USER_DATA',
     CANDLES: 'CANDLES',
+    TICKER: 'TICKER'
 }
 
 async function insertMonitor(newMonitor) {

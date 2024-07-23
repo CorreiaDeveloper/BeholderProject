@@ -59,12 +59,12 @@ function MonitorModal(props) {
                                     <MonitorType onChange={onInputChange} type={monitor.type} />
                                 </div>
                                 {
-                                    monitor.type === 'CANDLES'
+                                    monitor.type === 'CANDLES' || monitor.type === 'TICKER'
                                         ? (
                                             <div className="col-md-6 mb-3">
                                                 <div className="form-group">
                                                     <label htmlFor="symbol">Symbol:</label>
-                                                    <SelectSymbol onChange={onInputChange} symbol={monitor.symbol} onlyFavorites={false}/>
+                                                    <SelectSymbol onChange={onInputChange} symbol={monitor.symbol} onlyFavorites={false} />
                                                 </div>
                                             </div>
                                         )
@@ -83,7 +83,11 @@ function MonitorModal(props) {
                                     <SelectInterval onChange={onInputChange} interval={monitor.interval} />
                                 </div>
                             </div>
-                            <MonitorIndex indexes={monitor.indexes} onChange={onInputChange} />
+                            {
+                                monitor.type === 'CANDLES'
+                                    ? <MonitorIndex indexes={monitor.indexes} onChange={onInputChange} />
+                                    : <React.Fragment></React.Fragment>
+                            }
                             <div className="row">
                                 <div className="col-md6 mb3">
                                     <div className="form-group">

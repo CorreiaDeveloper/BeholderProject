@@ -17,7 +17,7 @@ function updateMemory(symbol, index, interval, value) {
 
     const indexKey = interval ? `${index}_${interval}` : index;
     const memoryKey = `${symbol}:${indexKey}`;
-    
+
     MEMORY[memoryKey] = value;
 
     if (LOGS) console.log(`Beholder memory updated: ${memoryKey} => ${JSON.stringify(value)}`);
@@ -39,7 +39,15 @@ function deleteMemory(symbol, index, interval) {
     }
 }
 
-function getMemory() {
+function getMemory(symbol, index, interval) {
+    if (symbol && index) {
+        const indexKey = interval ? `${index}_${interval}` : index;
+        const memoryKey = `${symbol}:${indexKey}`;
+
+        const result = MEMORY[memoryKey];
+        return typeof result === 'object' ? { ...result } : result;
+    }
+
     return { ...MEMORY };
 }
 
