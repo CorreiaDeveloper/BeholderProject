@@ -20,6 +20,7 @@ function CandleChart(props) {
             style: "1",
             locale: "en",
             toolbar_bg: "#f1f3f6",
+            hide_side_toolbar: false,
             enable_publishing: false,
             allow_symbol_change: true,
             details: true,
@@ -37,7 +38,7 @@ function CandleChart(props) {
         return (
             <div className="row">
                 <div className="col-12 mb-4">
-                    <div className="card cardDark border-0 shadow" style={{height: 480}}>
+                    <div className="card cardDark border-0 shadow" style={{ height: 480 }}>
                         <div className="card-body p-2">
                             <div className="tradingview-widget-container ">
                                 <div id="tradingview_d34df" className="divTradingView"></div>
