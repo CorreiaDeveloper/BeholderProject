@@ -10,7 +10,7 @@ export async function getAutomations(page, token) {
     return response.data;
 }
 
-export async function saveAutomations(id, newAutomation, token) {
+export async function saveAutomation(id, newAutomation, token) {
     const headers = { 'authorization': token };
     let response;
     if (id)

@@ -89,12 +89,12 @@ function MonitorModal(props) {
                                     : <React.Fragment></React.Fragment>
                             }
                             <div className="row">
-                                <div className="col-md6 mb3">
+                                <div className="col-md-6 mb3">
                                     <div className="form-group">
                                         <SwitchInput id="isActive" text="Is Active?" onChange={onInputChange} isChecked={monitor.isActive} />
                                     </div>
                                 </div>
-                                <div className="col-md6 mb3">
+                                <div className="col-md-6 mb3">
                                     <div className="form-group">
                                         <SwitchInput id="logs" text="Has Logs?" onChange={onInputChange} isChecked={monitor.logs} />
                                     </div>

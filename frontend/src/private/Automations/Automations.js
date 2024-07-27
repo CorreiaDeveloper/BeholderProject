@@ -3,8 +3,9 @@ import Menu from "../../components/Menu/Menu";
 import { useHistory, useLocation } from "react-router-dom";
 import Footer from "../../components/Footer/Footer";
 import Pagination from "../../components/Pagination/Pagination";
-import { getAutomations } from "../../services/AutomationsServices";
 import AutomationRow from "./AutomationRow";
+import AutomationModal from "./AutomationModal/AutomationModal";
+import { deleteAutomation, getAutomations, startAutomation, stopAutomation } from "../../services/AutomationsServices";
 
 function Automations() {
 
@@ -13,6 +14,13 @@ function Automations() {
     const [page, setPage] = useState(getPage());
     const [count, setCount] = useState(0);
     const [automations, setAutomations] = useState([]);
+
+    const DEFAULT_AUTOMATION = {
+        name: '',
+        conditions: '',
+        indexes: ''
+    }
+    const [editAutomation, setEditAutomation] = useState(DEFAULT_AUTOMATION);
 
     function getPage(location) {
         if (!location) location = defaultLocation;
@@ -36,23 +44,40 @@ function Automations() {
     }, [page])
 
     function onNewAutomationClick(event) {
-        console.log('onNewAutomationClick')
+        setEditAutomation(DEFAULT_AUTOMATION);
     }
 
-    function onEditAutomationClick(event){
-        console.log('onEditAutomationClick')
+    function onEditAutomationClick(event) {
+        const id = event.target.id.replace('edit', '');
+        setEditAutomation(automations.find(a => a.id == id));
     }
 
-    function onStartAutomationClick(event){
-        console.log('onStartAutomationClick')
+    function onStartAutomationClick(event) {
+        const id = event.target.id.replace('start', '');
+        const token = localStorage.getItem('token');
+        startAutomation(id, token)
+            .then(automation => history.go(0))
+            .catch(err => err.response ? err.response.data : err.message);
     }
 
-    function onStopAutomationClick(event){
-        console.log('onStopAutomationClick')
+    function onStopAutomationClick(event) {
+        const id = event.target.id.replace('stop', '');
+        const token = localStorage.getItem('token');
+        stopAutomation(id, token)
+            .then(automation => history.go(0))
+            .catch(err => err.response ? err.response.data : err.message);
     }
 
-    function onDeleteAutomationClick(event){
-        console.log('onDeleteAutomationClick')
+    function onDeleteAutomationClick(event) {
+        const id = event.target.id.replace('delete', '');
+        const token = localStorage.getItem('token');
+        deleteAutomation(id, token)
+            .then(automation => history.go(0))
+            .catch(err => err.response ? err.response.data : err.message);
+    }
+
+    function onAutomationSubmit(event) {
+        history.go(0);
     }
 
     return (
@@ -87,7 +112,7 @@ function Automations() {
                         <tbody>
                             {
                                 automations.map(automation => (
-                                    <AutomationRow data={automation} onEditClick={onEditAutomationClick} onStartClick={onStartAutomationClick} onStopClick={onStopAutomationClick} onDeleteClick={onDeleteAutomationClick} key={automation.id}/>
+                                    <AutomationRow data={automation} onEditClick={onEditAutomationClick} onStartClick={onStartAutomationClick} onStopClick={onStopAutomationClick} onDeleteClick={onDeleteAutomationClick} key={automation.id} />
                                 ))
                             }
                         </tbody>
@@ -96,6 +121,7 @@ function Automations() {
                 </div>
                 <Footer />
             </main>
+            <AutomationModal data={editAutomation} onSubmit={onAutomationSubmit} />
         </React.Fragment>
     )
 }
