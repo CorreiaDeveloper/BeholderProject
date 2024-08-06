@@ -91,14 +91,6 @@ function Symbols() {
             .catch(err => errorHandling(err))
     }
 
-    function onEditClick(event){
-        const symbol = event.target.id.replace('edit', '')
-        const token = localStorage.getItem('token')
-        getSymbol(symbol, token)
-        .then(symbolData => setEditSymbol(symbolData))
-        .catch(err => errorHandling(err))
-    }
-
     function onModalSubmit(event){
         loadSymbols();
     }

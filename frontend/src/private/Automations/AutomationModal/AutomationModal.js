@@ -12,6 +12,7 @@ import { saveAutomation } from '../../../services/AutomationsServices';
 */
 function AutomationModal(props) {
 
+    const [indexes, setIndexes] = useState([]);
     const [error, setError] = useState('');
     const [automation, setAutomation] = useState({
         conditions: '',
@@ -42,6 +43,13 @@ function AutomationModal(props) {
     useEffect(() => {
         setAutomation(props.data);
     }, [props.data.id])
+
+
+    useEffect(() => {
+        if(!automation || !automation.symbol) return;
+
+        const token = localStorage.getItem('token');
+    }, [automation.symbol])
 
     return (
         <div className='modal fade' id="modalAutomation" tabIndex="-1" role='dialog' aria-labelledby='modalTitleNotify' aria-hidden="true">
@@ -82,7 +90,7 @@ function AutomationModal(props) {
                         </ul>
                         <div className='tab-content px-3 mb-3' id="tabContent">
                             <div className='tab-pane fade show active pt-3' id="conditions" role='tabpanel' aria-labelledby='conditions-tab'>
-                                <ConditionsArea />
+                                <ConditionsArea indexes={indexes} conditions={automation.conditions} onChange={onInputChange} symbol={automation.symbol} />
                             </div>
                             <div className='tab-pane fade' id="actions" role='tabpanel' aria-labelledby='actions-tab'>
                                 <ActionsArea />

@@ -51,6 +51,33 @@ function getMemory(symbol, index, interval) {
     return { ...MEMORY };
 }
 
+function flattenObject(object) {
+    var toReturn = {};
+
+    for (var i in object) {
+        if (!object.hasOwnProperty(i)) continue;
+
+        if ((typeof object[i]) == 'object' && object[i] !== null) {
+            var flatObject = flattenObject(object[i]);
+            for (var x in flatObject) {
+                if (!flatObject.hasOwnProperty(x)) continue;
+
+                toReturn[i + '.' + x] = flatObject[x];
+            }
+        } else {
+            toReturn[i] = object[i];
+        }
+    }
+    return toReturn;
+}
+
+function getMemoryIndexes() {
+    Object.entries(flattenObject(MEMORY)).map(prop => {
+        console.log(prop)
+    })
+    return [];
+}
+
 function getBrain() {
     return { ...BRAIN };
 }
@@ -60,5 +87,6 @@ module.exports = {
     getMemory,
     getBrain,
     init,
-    deleteMemory
+    deleteMemory,
+    getMemoryIndexes
 }
