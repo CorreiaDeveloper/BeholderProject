@@ -12,11 +12,15 @@ function init(automations) {
     //carregar o BRAIN
 }
 
+function parseMemoryKey(symbol, index, interval = null) {
+    const indexKey = interval ? `${index}_${interval}` : index;
+    return `${symbol}:${indexKey}`;
+}
+
 function updateMemory(symbol, index, interval, value) {
     if (LOCK_MEMORY) return false;
 
-    const indexKey = interval ? `${index}_${interval}` : index;
-    const memoryKey = `${symbol}:${indexKey}`;
+    const memoryKey = parseMemoryKey(symbol, index, interval);    
 
     MEMORY[memoryKey] = value;
 
@@ -48,6 +52,7 @@ function getMemory(symbol, index, interval) {
         return typeof result === 'object' ? { ...result } : result;
     }
 
+
     return { ...MEMORY };
 }
 
@@ -71,11 +76,33 @@ function flattenObject(object) {
     return toReturn;
 }
 
+function getEval(prop) {
+    if (prop.indexOf('MEMORY') !== -1) return prop;
+    if (prop.indexOf('.') === -1) return `MEMORY['${prop}']`;
+
+    const propSplit = prop.split('.');
+    const memKey = propSplit[0];
+    const memProp = prop.replace(memKey, '');
+    return `MEMORY['${memKey}']${memProp}`;
+}
+
 function getMemoryIndexes() {
-    Object.entries(flattenObject(MEMORY)).map(prop => {
-        console.log(prop)
+    return Object.entries(flattenObject(MEMORY)).map(prop => {
+        if (prop[0].indexOf('previous') !== -1 || prop[0].indexOf(':') === -1) return false;
+        const propSplit = prop[0].split(':');
+        return {
+            symbol: propSplit[0],
+            variable: propSplit[1].replace('.current', ''),
+            eval: getEval(prop[0]),
+            example: prop[1]
+        }
     })
-    return [];
+        .filter(ix => ix)
+        .sort((a, b) => {
+            if (a.variable < b.variable) return -1;
+            if (a.variable > b.variable) return 1;
+            return 0;
+        })
 }
 
 function getBrain() {
@@ -88,5 +115,6 @@ module.exports = {
     getBrain,
     init,
     deleteMemory,
-    getMemoryIndexes
+    getMemoryIndexes,
+    parseMemoryKey
 }

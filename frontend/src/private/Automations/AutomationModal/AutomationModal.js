@@ -4,6 +4,8 @@ import ConditionsArea from './ConditionsArea/ConditionsArea';
 import ActionsArea from './ActionsArea/ActionsArea';
 import SwitchInput from '../../../components/SwitchInput/SwitchInput';
 import { saveAutomation } from '../../../services/AutomationsServices';
+import { getIndexes } from '../../../services/BeholderServices';
+import '../Automations.css'
 
 /**
  * props:
@@ -46,9 +48,21 @@ function AutomationModal(props) {
 
 
     useEffect(() => {
-        if(!automation || !automation.symbol) return;
+        if (!automation || !automation.symbol) return;
 
         const token = localStorage.getItem('token');
+        getIndexes(token)
+            .then(indexes => {
+                const filteredIndexes = indexes.filter(k => k.symbol === automation.symbol);
+                const baseWallet = indexes.find(ix => ix.variable === "WALLET" && automation.symbol.startsWith(ix.symbol));
+                if (baseWallet) filteredIndexes.splice(0, 0, baseWallet);
+
+                const quoteWallet = indexes.find(ix => ix.variable === "WALLET" && automation.symbol.endsWith(ix.symbol));
+                if (quoteWallet) filteredIndexes.splice(0, 0, quoteWallet);
+
+                setIndexes(filteredIndexes);
+            })
+            .catch(err => err.response ? err.response.data : err.message);
     }, [automation.symbol])
 
     return (

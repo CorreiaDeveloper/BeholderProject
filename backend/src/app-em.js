@@ -26,9 +26,13 @@ function startMiniTickerMonitor(broadcastLabel, logs) {
         }
 
         const books = Object.entries(markets).map(mkt => {
-            const book = { symbol: mkt[0], bestAsk: mkt[1].close, bestBid: mkt[1].close };
+            const book = { symbol: mkt[0], bestAsk: parseFloat(mkt[1].close), bestBid: parseFloat(mkt[1].close) };
+            const currentMemory = beholder.getMemory(mkt[0], indexKeys.BOOK);
+            const newMemory = {};
+            newMemory.previous = currentMemory ? currentMemory.current : book;
+            newMemory.current = book;
 
-            beholder.updateMemory(mkt[0], indexKeys.BOOK, null, book);
+            beholder.updateMemory(mkt[0], indexKeys.BOOK, null, newMemory)
 
             return book;
         })
@@ -269,7 +273,7 @@ async function init(settings, wssInstance, beholderInstance) {
                 case monitorTypes.CANDLES:
                     return startChartMonitor(monitor.symbol,
                         monitor.interval,
-                        monitor.indexes.split(','),
+                        monitor.indexes ? monitor.indexes.split(',') : [],
                         monitor.broadcastLabel,
                         monitor.logs);
                 case monitorTypes.TICKER:

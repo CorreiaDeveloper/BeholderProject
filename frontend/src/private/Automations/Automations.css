@@ -9,3 +9,12 @@
 .nav-tabs .nav-link {
     margin-bottom: 0px;
 }
+
+.input-group .alert{
+    font-size: 0.6rem;
+}
+
+.divScrollBadges {
+    overflow: auto;
+    max-height: 100px;
+}
