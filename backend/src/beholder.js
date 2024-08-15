@@ -1,6 +1,7 @@
 const MEMORY = {}
 
 let BRAIN = {}
+let BRAIN_INDEX = {}
 
 let LOCK_MEMORY = false;
 
@@ -9,7 +10,31 @@ let LOCK_BRAIN = false;
 const LOGS = process.env.BEHOLDER_LOGS === 'true';
 
 function init(automations) {
-    //carregar o BRAIN
+    try {
+        LOCK_BRAIN = true;
+        LOCK_MEMORY = true;
+
+        BRAIN = {};
+        BRAIN_INDEX = {};
+        automations.map(auto => updateBrain(auto));
+    }
+    finally {
+        LOCK_BRAIN = false;
+        LOCK_MEMORY = false;
+        console.log('Beholder Brain has started!');
+    }
+}
+
+function updateBrain(automation) {
+    if (!automation.isActive) return;
+
+    BRAIN[automation.id] = automation;
+    automation.indexes.split(',').map(ix => updateBrainIndex(ix, automation.id));
+}
+
+function updateBrainIndex(index, automationId) {
+    if (!BRAIN_INDEX[index]) BRAIN_INDEX[index] = [];
+    BRAIN_INDEX[index].push((automationId));
 }
 
 function parseMemoryKey(symbol, index, interval = null) {
@@ -20,7 +45,7 @@ function parseMemoryKey(symbol, index, interval = null) {
 function updateMemory(symbol, index, interval, value) {
     if (LOCK_MEMORY) return false;
 
-    const memoryKey = parseMemoryKey(symbol, index, interval);    
+    const memoryKey = parseMemoryKey(symbol, index, interval);
 
     MEMORY[memoryKey] = value;
 
@@ -54,6 +79,10 @@ function getMemory(symbol, index, interval) {
 
 
     return { ...MEMORY };
+}
+
+function getBrainIndexes() {
+    return { ...BRAIN_INDEX };
 }
 
 function flattenObject(object) {
@@ -116,5 +145,6 @@ module.exports = {
     init,
     deleteMemory,
     getMemoryIndexes,
-    parseMemoryKey
+    parseMemoryKey,
+    getBrainIndexes
 }
