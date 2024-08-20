@@ -10,4 +10,6 @@ router.get('/brain/indexes', beholderController.getBrainIndexes);
 
 router.get('/brain', beholderController.getBrain);
 
+router.get('/analysis', beholderController.getAnalysisIndexes);
+
 module.exports = router;

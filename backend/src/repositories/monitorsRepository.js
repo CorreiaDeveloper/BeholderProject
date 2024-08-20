@@ -10,6 +10,7 @@ const monitorTypes = {
 
 async function insertMonitor(newMonitor) {
     const alreadyExists = await monitorExists(newMonitor.type, newMonitor.symbol, newMonitor.interval);
+
     if (alreadyExists) throw new Error(`Already exists a monitor with these params.`)
 
     return monitorModel.create(newMonitor);

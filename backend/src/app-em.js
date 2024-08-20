@@ -1,7 +1,7 @@
 const ordersRepository = require('./repositories/ordersRepository');
 const { orderStatus } = require('./repositories/ordersRepository');
 const { monitorTypes, getActiveMonitors } = require('./repositories/monitorsRepository');
-const { RSI, MACD, StochRSI, BollingerBands, SMA, EMA, indexKeys } = require('./utils/indexes')
+const { execCalc, indexKeys } = require('./utils/indexes')
 
 let WSS, beholder, exchange;
 
@@ -160,30 +160,23 @@ function stopChartMonitor(symbol, interval, indexes, logs) {
 
 function processChartData(symbol, indexes, interval, ohlc, logs) {
     if (typeof indexes === 'string') indexes = indexes.split(',');
-    if (indexes && indexes.length > 0) {
-        indexes.map(index => {
+    if (!indexes || !Array.isArray(indexes) || indexes.length === 0) return false;
 
-            const params = index.split('_');
-            const indexName = params[0];
-            params.splice(0, 1);
+    return Promise.all(indexes.map(async (index) => {
+        const params = index.split('_');
+        const indexName = params[0];
+        params.splice(0, 1);
 
-            let calc;
-
-            switch (indexName) {
-                case indexKeys.RSI: calc = RSI(ohlc.close, ...params); break;
-                case indexKeys.MACD: calc = MACD(ohlc.close, ...params); break;
-                case indexKeys.SMA: calc = SMA(ohlc.close, ...params); break;
-                case indexKeys.EMA: calc = EMA(ohlc.close, ...params); break;
-                case indexKeys.BOLLINGER_BANDS: calc = BollingerBands(ohlc.close, ...params); break;
-                case indexKeys.STOCH_RSI: calc = StochRSI(ohlc.close, ...params); break;
-                default: return;
-            }
-
-            if (logs) console.log(`${indexName} calculated: ${JSON.stringify(calc.current)}`);
-
-            return beholder.updateMemory(symbol, index, interval, calc);
-        })
-    }
+        try {
+            const calc = execCalc(indexName, ohlc, ...params);
+            if (logs) console.log(`${index} calculated: ${JSON.stringify(calc.current ? calc.current : calc)}`);
+            return beholder.updateMemory(symbol, index, interval, calc, calc.current !== undefined);
+        } catch (err) {
+            console.error(`Exchange Monitor => Can't calc the index ${index}: `);
+            console.error(err);
+            return false;
+        }
+    }));
 }
 
 function getLightTicker(data) {
@@ -232,7 +225,7 @@ function startTickerMonitor(symbol, broadcastLabel, logs) {
 
             beholder.updateMemory(data.symbol, indexKeys.TICKER, null, newMemory);
 
-            if(WSS && broadcastLabel) WSS.broadcast({ [broadcastLabel]: data });
+            if (WSS && broadcastLabel) WSS.broadcast({ [broadcastLabel]: data });
         }
         catch (err) {
             if (logs) console.error(err);
@@ -244,9 +237,9 @@ function startTickerMonitor(symbol, broadcastLabel, logs) {
 function stopTickerMonitor(symbol, logs) {
     if (!symbol) return new Error(`Can't stop a Ticker Monitor without a symbol.`);
     if (!exchange) return new Error('Exchange Monitor not initialized yet.');
-    
+
     exchange.terminateTickerStream(symbol);
-    
+
     if (logs) console.log(`Ticker Monitor ${symbol} stopped!`);
 
     beholder.deleteMemory(symbol, indexKeys.TICKER);

@@ -44,7 +44,7 @@ function parseMemoryKey(symbol, index, interval = null) {
     return `${symbol}:${indexKey}`;
 }
 
-function updateMemory(symbol, index, interval, value) {
+function updateMemory(symbol, index, interval, value, executeAutomations = true) {
     if (LOCK_MEMORY) return false;
 
     const memoryKey = parseMemoryKey(symbol, index, interval);
@@ -53,7 +53,12 @@ function updateMemory(symbol, index, interval, value) {
 
     if (LOGS) console.log(`Beholder memory updated: ${memoryKey} => ${JSON.stringify(value)}`);
 
-    if (LOCK_BRAIN) return false;
+    if (LOCK_BRAIN) {
+        if (LOGS) console.log(`Beholder brain is locked, sorry!`);
+        return false;
+    }
+
+    if (!executeAutomations) return false;
 
     try {
         const automations = findAutomations(memoryKey)

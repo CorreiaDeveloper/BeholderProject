@@ -49,8 +49,9 @@ async function getAutomations(req, res, next) {
 async function insertAutomation(req, res, next) {
     const newAutomation = req.body;
 
-    if (validateConditions(newAutomation.conditions))
-        return res.status(400).json(`Invalid conditions!`);
+
+    if (!validateConditions(newAutomation.conditions))
+        return res.status(400).json('You need to have at least one condition per automation!');
 
     const savedAutomation = await automationsRepository.insertAutomation(newAutomation);
 
@@ -65,8 +66,8 @@ async function updateAutomation(req, res, next) {
     const id = req.params.id;
     const newAutomation = req.body;
 
-    if (validateConditions(newAutomation.conditions))
-        return res.status(400).json(`Invalid conditions!`);
+    if (!validateConditions(newAutomation.conditions))
+        return res.status(400).json('You need to have at least one condition per automation!');
 
     const updatedAutomation = await automationsRepository.updateAutomation(id, newAutomation);
     const plainAutomation = updatedAutomation.get({ plain: true })
